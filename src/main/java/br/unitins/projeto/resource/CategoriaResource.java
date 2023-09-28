@@ -15,6 +15,7 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
@@ -36,6 +37,21 @@ public class CategoriaResource {
     public List<CategoriaResponseDTO> getAll() {
         LOG.info("Buscando todos os categorias.");
         return service.getAll();
+    }
+
+    @GET
+    @Path("/paginado")
+    public List<CategoriaResponseDTO> getAllPaginado(
+            @QueryParam("page") int pageNumber,
+            @QueryParam("size") int pageSize
+    ) {
+        return service.findAllPaginado(pageNumber, pageSize);
+    }
+
+    @GET
+    @Path("/count")
+    public Long count() {
+        return service.count();
     }
 
     @GET

@@ -24,4 +24,6 @@ public interface CategoriaService {
 
     Long count();
 
+    List<CategoriaResponseDTO> findAllPaginado(int pageNumber, int pageSize);
+
 }

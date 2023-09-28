@@ -5,6 +5,7 @@ import br.unitins.projeto.dto.categoria.CategoriaResponseDTO;
 import br.unitins.projeto.dto.situacao.AlterarSituacaoDTO;
 import br.unitins.projeto.model.Categoria;
 import br.unitins.projeto.repository.CategoriaRepository;
+import io.quarkus.panache.common.Page;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -97,6 +98,15 @@ public class CategoriaServiceImpl implements CategoriaService {
     @Override
     public Long count() {
         return repository.count();
+    }
+
+    @Override
+    public List<CategoriaResponseDTO> findAllPaginado(int pageNumber, int pageSize) {
+        List<Categoria> lista = this.repository.findAll()
+                .page(Page.of(pageNumber, pageSize))
+                .list();
+
+        return lista.stream().map(CategoriaResponseDTO::new).collect(Collectors.toList());
     }
 
 }
