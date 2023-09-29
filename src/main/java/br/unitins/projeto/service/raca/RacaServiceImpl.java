@@ -62,6 +62,7 @@ public class RacaServiceImpl implements RacaService {
         validar(racaDto);
 
         Raca entity = repository.findById(id);
+        entity.setAtivo(true);
         entity.setNome(racaDto.nome());
 
         return new RacaResponseDTO(entity);

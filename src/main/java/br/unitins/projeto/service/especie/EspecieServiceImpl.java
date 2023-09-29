@@ -49,6 +49,7 @@ public class EspecieServiceImpl implements EspecieService {
 
         Especie entity = new Especie();
         entity.setNome(especieDto.nome());
+        entity.setAtivo(true);
         repository.persist(entity);
 
         return new EspecieResponseDTO(entity);
