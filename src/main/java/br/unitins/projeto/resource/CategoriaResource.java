@@ -109,12 +109,12 @@ public class CategoriaResource {
     @PUT
     @Path("/situacao/{id}")
 //    @RolesAllowed({"Admin"})
-    public Response alterarSituacao(@PathParam("id") Long id, AlterarSituacaoDTO dto) {
+    public Response alterarSituacao(@PathParam("id") Long id, Boolean situacao) {
         LOG.infof("Alterando situação da categoria");
         Result result = null;
 
         try {
-            CategoriaResponseDTO response = service.alterarSituacao(id, dto);
+            CategoriaResponseDTO response = service.alterarSituacao(id, situacao);
             LOG.infof("Categoria (%d) alterado com sucesso.", response.id());
             return Response.ok(response).build();
         } catch (ConstraintViolationException e) {

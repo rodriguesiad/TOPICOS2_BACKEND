@@ -14,6 +14,7 @@ import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
 import jakarta.ws.rs.NotFoundException;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -88,9 +89,9 @@ public class CategoriaServiceImpl implements CategoriaService {
 
     @Override
     @Transactional
-    public CategoriaResponseDTO alterarSituacao(Long id, AlterarSituacaoDTO dto) {
+    public CategoriaResponseDTO alterarSituacao(Long id, Boolean situacao) {
         Categoria entity = repository.findById(id);
-        entity.setAtivo(dto.situacao());
+        entity.setAtivo(situacao);
 
         return new CategoriaResponseDTO(entity);
     }
@@ -104,7 +105,9 @@ public class CategoriaServiceImpl implements CategoriaService {
     public List<CategoriaResponseDTO> findAllPaginado(int pageNumber, int pageSize) {
         List<Categoria> lista = this.repository.findAll()
                 .page(Page.of(pageNumber, pageSize))
-                .list();
+                .list().stream()
+                .sorted(Comparator.comparing(Categoria::getNome))
+                .collect(Collectors.toList());
 
         return lista.stream().map(CategoriaResponseDTO::new).collect(Collectors.toList());
     }

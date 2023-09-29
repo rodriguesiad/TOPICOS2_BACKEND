@@ -20,7 +20,7 @@ public interface CategoriaService {
 
     List<CategoriaResponseDTO> findByNome(String nome);
 
-    CategoriaResponseDTO alterarSituacao(Long id, AlterarSituacaoDTO dto);
+    CategoriaResponseDTO alterarSituacao(Long id, Boolean situacao);
 
     Long count();
 

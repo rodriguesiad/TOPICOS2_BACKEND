@@ -1,6 +1,5 @@
 package br.unitins.projeto.service.raca;
 
-import br.unitins.projeto.dto.categoria.CategoriaResponseDTO;
 import br.unitins.projeto.dto.raca.RacaDTO;
 import br.unitins.projeto.dto.raca.RacaResponseDTO;
 import br.unitins.projeto.dto.situacao.AlterarSituacaoDTO;
@@ -21,8 +20,10 @@ public interface RacaService {
 
     List<RacaResponseDTO> findByNome(String nome);
 
-    RacaResponseDTO alterarSituacao(Long id, AlterarSituacaoDTO dto);
+    RacaResponseDTO alterarSituacao(Long id, Boolean situacao);
 
     Long count();
+
+    List<RacaResponseDTO> findAllPaginado(int pageNumber, int pageSize);
 
 }
