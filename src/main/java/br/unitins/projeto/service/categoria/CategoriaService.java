@@ -2,7 +2,6 @@ package br.unitins.projeto.service.categoria;
 
 import br.unitins.projeto.dto.categoria.CategoriaDTO;
 import br.unitins.projeto.dto.categoria.CategoriaResponseDTO;
-import br.unitins.projeto.dto.situacao.AlterarSituacaoDTO;
 
 import java.util.List;
 
@@ -18,12 +17,14 @@ public interface CategoriaService {
 
     void delete(Long id);
 
-    List<CategoriaResponseDTO> findByNome(String nome);
+    List<CategoriaResponseDTO> findByNome(String nome, int pageNumber, int pageSize);
 
     CategoriaResponseDTO alterarSituacao(Long id, Boolean situacao);
 
     Long count();
 
     List<CategoriaResponseDTO> findAllPaginado(int pageNumber, int pageSize);
+
+    Long countByNome(String nome);
 
 }

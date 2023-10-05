@@ -153,12 +153,14 @@ public class RacaResource {
 
     @GET
     @Path("/search/{nome}")
-    public Response search(@PathParam("nome") String nome) {
+    public Response search(@PathParam("nome") String nome,
+                           @QueryParam("page") int pageNumber,
+                           @QueryParam("size") int pageSize) {
         LOG.infof("Pesquisando raças pelo nome: %s", nome);
         Result result = null;
 
         try {
-            List<RacaResponseDTO> response = service.findByNome(nome);
+            List<RacaResponseDTO> response = service.findByNome(nome, pageNumber, pageSize);
             LOG.infof("Pesquisa realizada com sucesso.");
             return Response.ok(response).build();
         } catch (ConstraintViolationException e) {
@@ -171,6 +173,12 @@ public class RacaResource {
         }
 
         return Response.status(Status.NOT_FOUND).entity(result).build();
+    }
+
+    @GET
+    @Path("/search/{nome}/count")
+    public Long count(@PathParam("nome") String nome) {
+        return service.countByNome(nome);
     }
 
 }

@@ -1,7 +1,6 @@
 package br.unitins.projeto.resource;
 
 import br.unitins.projeto.application.Result;
-import br.unitins.projeto.dto.categoria.CategoriaResponseDTO;
 import br.unitins.projeto.dto.usuario.UsuarioDTO;
 import br.unitins.projeto.dto.usuario.UsuarioResponseDTO;
 import br.unitins.projeto.dto.usuario.cadastro.CadastroAdminDTO;
@@ -27,9 +26,7 @@ import org.jboss.logging.Logger;
 import java.util.List;
 
 @Path("/usuarios")
-
 @Consumes(MediaType.APPLICATION_JSON)
-
 @Produces(MediaType.APPLICATION_JSON)
 public class UsuarioResource {
 
@@ -98,14 +95,16 @@ public class UsuarioResource {
     }
 
     @GET
-    @Path("/search/{nome}")
+    @Path("/search/{campoBusca}")
 //    @RolesAllowed({"Admin"})
-    public Response search(@PathParam("nome") String nome) {
-        LOG.infof("Pesquisando usuarios pelo nome: %s", nome);
+    public Response search(@PathParam("campoBusca") String campoBusca,
+                           @QueryParam("page") int pageNumber,
+                           @QueryParam("size") int pageSize) {
+        LOG.infof("Pesquisando usuarios pelo campoBusca: %s", campoBusca);
         Result result = null;
 
         try {
-            List<UsuarioResponseDTO> response = service.findByNome(nome);
+            List<UsuarioResponseDTO> response = service.findByCampoBusca(campoBusca, pageNumber, pageSize);
             LOG.infof("Pesquisa realizada com sucesso.");
             return Response.ok(response).build();
         } catch (ConstraintViolationException e) {
@@ -118,6 +117,12 @@ public class UsuarioResource {
         }
 
         return Response.status(Status.NOT_FOUND).entity(result).build();
+    }
+
+    @GET
+    @Path("/search/{campoBusca}/count")
+    public Long count(@PathParam("campoBusca") String campoBusca) {
+        return service.countByCampoBusca(campoBusca);
     }
 
     @PUT
@@ -144,7 +149,7 @@ public class UsuarioResource {
     }
 
     @GET
-    @Path("admin/paginado")
+    @Path("/admin/paginado")
     public List<CadastroAdminResponseDTO> getAllPaginado(
             @QueryParam("page") int pageNumber,
             @QueryParam("size") int pageSize
@@ -153,7 +158,13 @@ public class UsuarioResource {
     }
 
     @GET
-    @Path("admin/count")
+    @Path("/admin/{id}")
+    public CadastroAdminResponseDTO findByIdPorAdmin(@PathParam("id") Long id) {
+        return service.findByIdPorAdmin(id);
+    }
+
+    @GET
+    @Path("/admin/count")
     public Long count() {
         return service.count();
     }
@@ -165,7 +176,7 @@ public class UsuarioResource {
         Result result = null;
 
         try {
-            CadastroAdminResponseDTO response = service.cadastrarAdmin(dto);
+            CadastroAdminResponseDTO response = service.cadastrarPorAdmin(dto);
             LOG.infof("Usuario (%d) criado com sucesso.", response.id());
             return Response.status(Status.CREATED).entity(response).build();
         } catch (ConstraintViolationException e) {
@@ -181,17 +192,17 @@ public class UsuarioResource {
     }
 
     @PUT
-    @Path("/admin//{id}")
+    @Path("/admin/{id}")
     public Response updateAdmin(@PathParam("id") Long id, @Valid CadastroAdminDTO dto) {
-        LOG.infof("Inserindo um usuario: %s", dto.nome());
+        LOG.infof("Alterando um usuario: %s", dto.nome());
         Result result = null;
 
         try {
-            CadastroAdminResponseDTO response = service.alterarAdmin(id, dto);
-            LOG.infof("Usuario (%d) criado com sucesso.", response.id());
-            return Response.status(Status.CREATED).entity(response).build();
+            CadastroAdminResponseDTO response = service.alterarPorAdmin(id, dto);
+            LOG.infof("Usuario (%d) alterado com sucesso.", response.id());
+            return Response.ok(response).build();
         } catch (ConstraintViolationException e) {
-            LOG.error("Erro ao incluir um usuario.");
+            LOG.error("Erro ao alterar um usuario.");
             LOG.debug(e.getMessage());
             result = new Result(e.getConstraintViolations());
         } catch (Exception e) {

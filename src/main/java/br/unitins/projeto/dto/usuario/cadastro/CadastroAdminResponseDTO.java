@@ -18,9 +18,8 @@ public record CadastroAdminResponseDTO(
         String cpf,
         String senha,
         LocalDate dataNascimento,
-        Set<Perfil> perfis,
+        List<Integer> perfis,
         List<TelefoneResponseDTO> telefones,
-
         Boolean ativo
 
 ) {
@@ -34,7 +33,7 @@ public record CadastroAdminResponseDTO(
                     null,
                     entity.getSenha(),
                     null,
-                    entity.getPerfis(),
+                    entity.getPerfis().stream().map(perfil -> perfil.getId()).collect(Collectors.toList()),
                     gerarTelefoneDTO(entity.getListaTelefone()),
                     entity.getAtivo());
 
@@ -45,7 +44,7 @@ public record CadastroAdminResponseDTO(
                 entity.getPessoaFisica().getCpf(),
                 entity.getSenha(),
                 entity.getPessoaFisica().getDataNascimento(),
-                entity.getPerfis(),
+                entity.getPerfis().stream().map(perfil -> perfil.getId()).collect(Collectors.toList()),
                 gerarTelefoneDTO(entity.getListaTelefone()),
                 entity.getAtivo());
     }

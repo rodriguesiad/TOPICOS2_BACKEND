@@ -2,7 +2,6 @@ package br.unitins.projeto.service.raca;
 
 import br.unitins.projeto.dto.raca.RacaDTO;
 import br.unitins.projeto.dto.raca.RacaResponseDTO;
-import br.unitins.projeto.dto.situacao.AlterarSituacaoDTO;
 
 import java.util.List;
 
@@ -18,12 +17,14 @@ public interface RacaService {
 
     void delete(Long id);
 
-    List<RacaResponseDTO> findByNome(String nome);
+    List<RacaResponseDTO> findByNome(String nome, int pageNumber, int pageSize);
 
     RacaResponseDTO alterarSituacao(Long id, Boolean situacao);
 
     Long count();
 
     List<RacaResponseDTO> findAllPaginado(int pageNumber, int pageSize);
+
+    Long countByNome(String nome);
 
 }

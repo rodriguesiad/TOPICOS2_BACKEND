@@ -2,7 +2,6 @@ package br.unitins.projeto.service.raca;
 
 import br.unitins.projeto.dto.raca.RacaDTO;
 import br.unitins.projeto.dto.raca.RacaResponseDTO;
-import br.unitins.projeto.model.Categoria;
 import br.unitins.projeto.model.Raca;
 import br.unitins.projeto.repository.RacaRepository;
 import io.quarkus.panache.common.Page;
@@ -82,8 +81,13 @@ public class RacaServiceImpl implements RacaService {
     }
 
     @Override
-    public List<RacaResponseDTO> findByNome(String nome) {
-        List<Raca> list = repository.findByNome(nome);
+    public List<RacaResponseDTO> findByNome(String nome, int pageNumber, int pageSize) {
+        List<Raca> list = this.repository.findByNome(nome)
+                .page(Page.of(pageNumber, pageSize))
+                .list().stream()
+                .sorted(Comparator.comparing(Raca::getNome))
+                .collect(Collectors.toList());
+
         return list.stream().map(RacaResponseDTO::new).collect(Collectors.toList());
     }
 
@@ -93,9 +97,15 @@ public class RacaServiceImpl implements RacaService {
                 .page(Page.of(pageNumber, pageSize))
                 .list().stream()
                 .sorted(Comparator.comparing(Raca::getNome))
-                .collect(Collectors.toList());;
+                .collect(Collectors.toList());
+        ;
 
         return lista.stream().map(RacaResponseDTO::new).collect(Collectors.toList());
+    }
+
+    @Override
+    public Long countByNome(String nome) {
+        return repository.findByNome(nome).count();
     }
 
     @Override

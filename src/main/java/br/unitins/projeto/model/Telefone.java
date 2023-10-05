@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 
 import br.unitins.projeto.dto.telefone.TelefoneResponseDTO;
 
+import java.util.Objects;
+
 @Entity
 public class Telefone extends DefaultEntity {
 
@@ -38,4 +40,18 @@ public class Telefone extends DefaultEntity {
         this.codigoArea = dto.codigoArea();
         this.numero = dto.numero();
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Telefone telefone = (Telefone) o;
+        return Objects.equals(codigoArea, telefone.codigoArea) && Objects.equals(numero, telefone.numero);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(codigoArea, numero);
+    }
+
 }

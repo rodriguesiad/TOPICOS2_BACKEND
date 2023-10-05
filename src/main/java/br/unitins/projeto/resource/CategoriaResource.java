@@ -3,7 +3,6 @@ package br.unitins.projeto.resource;
 import br.unitins.projeto.application.Result;
 import br.unitins.projeto.dto.categoria.CategoriaDTO;
 import br.unitins.projeto.dto.categoria.CategoriaResponseDTO;
-import br.unitins.projeto.dto.situacao.AlterarSituacaoDTO;
 import br.unitins.projeto.service.categoria.CategoriaService;
 import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolationException;
@@ -154,12 +153,14 @@ public class CategoriaResource {
 
     @GET
     @Path("/search/{nome}")
-    public Response search(@PathParam("nome") String nome) {
+    public Response search(@PathParam("nome") String nome,
+                           @QueryParam("page") int pageNumber,
+                           @QueryParam("size") int pageSize) {
         LOG.infof("Pesquisando categorias pelo nome: %s", nome);
         Result result = null;
 
         try {
-            List<CategoriaResponseDTO> response = service.findByNome(nome);
+            List<CategoriaResponseDTO> response = service.findByNome(nome, pageNumber, pageSize);
             LOG.infof("Pesquisa realizada com sucesso.");
             return Response.ok(response).build();
         } catch (ConstraintViolationException e) {
@@ -172,6 +173,12 @@ public class CategoriaResource {
         }
 
         return Response.status(Status.NOT_FOUND).entity(result).build();
+    }
+
+    @GET
+    @Path("/search/{nome}/count")
+    public Long count(@PathParam("nome") String nome) {
+        return service.countByNome(nome);
     }
 
 }

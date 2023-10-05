@@ -2,7 +2,6 @@ package br.unitins.projeto.service.categoria;
 
 import br.unitins.projeto.dto.categoria.CategoriaDTO;
 import br.unitins.projeto.dto.categoria.CategoriaResponseDTO;
-import br.unitins.projeto.dto.situacao.AlterarSituacaoDTO;
 import br.unitins.projeto.model.Categoria;
 import br.unitins.projeto.repository.CategoriaRepository;
 import io.quarkus.panache.common.Page;
@@ -82,9 +81,19 @@ public class CategoriaServiceImpl implements CategoriaService {
     }
 
     @Override
-    public List<CategoriaResponseDTO> findByNome(String nome) {
-        List<Categoria> list = repository.findByNome(nome);
+    public List<CategoriaResponseDTO> findByNome(String nome, int pageNumber, int pageSize) {
+        List<Categoria> list = this.repository.findByNome(nome)
+                .page(Page.of(pageNumber, pageSize))
+                .list().stream()
+                .sorted(Comparator.comparing(Categoria::getNome))
+                .collect(Collectors.toList());
+
         return list.stream().map(CategoriaResponseDTO::new).collect(Collectors.toList());
+    }
+
+    @Override
+    public Long countByNome(String nome) {
+        return repository.findByNome(nome).count();
     }
 
     @Override

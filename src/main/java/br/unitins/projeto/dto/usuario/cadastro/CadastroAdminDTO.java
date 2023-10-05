@@ -10,6 +10,7 @@ import org.hibernate.validator.constraints.br.CPF;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 public record CadastroAdminDTO(
 
@@ -22,11 +23,11 @@ public record CadastroAdminDTO(
 
         @NotBlank(message = "O campo senha deve ser informado.") String senha,
 
-        @NotNull(message = "A data de nascimento deve ser informada.") @JsonFormat(pattern = "yyyy-MM-dd")
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
         LocalDate dataNascimento,
 
-        @NotNull(message = "O perfil deve ser informado.")
-        Integer perfil,
+        @NotNull(message = "O perfis deve ser informado.")
+        List<Integer> perfis,
         
         List<TelefoneDTO> telefones
 ) {
