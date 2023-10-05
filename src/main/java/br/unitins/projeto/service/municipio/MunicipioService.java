@@ -17,7 +17,7 @@ public interface MunicipioService {
 
     void delete(Long id);
 
-    List<MunicipioResponseDTO> findByDescricao(String descricao);
+    List<MunicipioResponseDTO> findByNome(String descricao);
 
     Long count();
 

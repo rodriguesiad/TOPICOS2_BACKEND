@@ -6,9 +6,9 @@ import jakarta.validation.constraints.Size;
 
 public record MunicipioDTO(
 
-        @NotBlank(message = "O campo descriçao deve ser informado.")
-        @Size(max = 60, message = "O campo descrição deve possuir no máximo 60 caracteres.") 
-        String descricao,
+        @NotBlank(message = "O campo nome deve ser informado.")
+        @Size(max = 60, message = "O campo nome deve possuir no máximo 60 caracteres.")
+        String nome,
 
         @NotNull(message = "O estado deve ser informado.") Long idEstado
 

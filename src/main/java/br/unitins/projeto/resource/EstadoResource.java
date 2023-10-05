@@ -47,7 +47,7 @@ public class EstadoResource {
     @POST
 //    @RolesAllowed({"Admin"})
     public Response insert(EstadoDTO dto) {
-        LOG.infof("Inserindo um estados: %s", dto.descricao());
+        LOG.infof("Inserindo um estados: %s", dto.nome());
         Result result = null;
 
         try {
@@ -70,7 +70,7 @@ public class EstadoResource {
     @Path("/{id}")
 //    @RolesAllowed({"Admin"})
     public Response update(@PathParam("id") Long id, EstadoDTO dto) {
-        LOG.infof("Alterando um estados: %s", dto.descricao());
+        LOG.infof("Alterando um estados: %s", dto.nome());
         Result result = null;
 
         try {

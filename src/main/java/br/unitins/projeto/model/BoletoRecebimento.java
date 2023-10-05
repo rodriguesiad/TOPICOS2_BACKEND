@@ -20,6 +20,12 @@ public class BoletoRecebimento extends MetodoDeRecebimento {
     @Column(name = "agencia", nullable = false)
     private String agencia;
 
+    @Column(name = "conta", nullable = false)
+    private String conta;
+
+    @Column(nullable = false)
+    private Boolean ativo;
+
     public String getBanco() {
         return banco;
     }
@@ -50,6 +56,22 @@ public class BoletoRecebimento extends MetodoDeRecebimento {
 
     public void setAgencia(String agencia) {
         this.agencia = agencia;
+    }
+
+    public String getConta() {
+        return conta;
+    }
+
+    public void setConta(String conta) {
+        this.conta = agencia;
+    }
+
+    public Boolean getAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(Boolean ativo) {
+        this.ativo = ativo;
     }
 
 }
