@@ -5,10 +5,10 @@ import br.unitins.projeto.model.Estado;
 public record EstadoResponseDTO(
         Long id,
         String sigla,
-        String descricao) {
+        String nome) {
 
     public EstadoResponseDTO(Estado entity) {
-        this(entity.getId(), entity.getSigla(), entity.getDescricao());
+        this(entity.getId(), entity.getSigla(), entity.getNome());
     }
 
 }

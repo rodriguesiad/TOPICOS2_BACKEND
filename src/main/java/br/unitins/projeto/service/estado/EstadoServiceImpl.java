@@ -48,7 +48,7 @@ public class EstadoServiceImpl implements EstadoService {
         validar(estadoDTO);
 
         Estado entity = new Estado();
-        entity.setDescricao(estadoDTO.descricao());
+        entity.setNome(estadoDTO.nome());
         entity.setSigla(estadoDTO.sigla().toUpperCase());
         repository.persist(entity);
 
@@ -61,7 +61,7 @@ public class EstadoServiceImpl implements EstadoService {
         validar(estadoDTO);
 
         Estado entity = repository.findById(id);
-        entity.setDescricao(estadoDTO.descricao());
+        entity.setNome(estadoDTO.nome());
         entity.setSigla(estadoDTO.sigla().toUpperCase());
 
         return new EstadoResponseDTO(entity);

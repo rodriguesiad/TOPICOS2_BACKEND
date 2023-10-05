@@ -7,12 +7,13 @@ public record PixRecebimentoResponseDTO(
 
         Long id,
         String chave,
-        TipoChavePix tipoChavePix
+        TipoChavePix tipoChavePix,
+        Boolean ativo
 
 ) {
 
     public PixRecebimentoResponseDTO(PixRecebimento entity) {
-        this( entity.getId(), entity.getChave(), entity.getTipoChavePix());
+        this( entity.getId(), entity.getChave(), entity.getTipoChavePix(), entity.getAtivo());
     }
 
 }

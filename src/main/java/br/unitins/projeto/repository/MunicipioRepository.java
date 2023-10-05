@@ -10,10 +10,10 @@ import io.quarkus.hibernate.orm.panache.PanacheRepository;
 @ApplicationScoped
 public class MunicipioRepository implements PanacheRepository<Municipio> {
     
-    public List<Municipio> findByDescricao(String descricao){
-        if (descricao == null)
+    public List<Municipio> findByNome(String nome){
+        if (nome == null)
             return null;
-        return find("UPPER(descricao) LIKE ?1 ", "%"+descricao.toUpperCase()+"%").list();
+        return find("UPPER(nome) LIKE ?1 ", "%"+nome.toUpperCase()+"%").list();
     }
 
 }

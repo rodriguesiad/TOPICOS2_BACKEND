@@ -53,7 +53,7 @@ public class MunicipioServiceImpl implements MunicipioService {
         validar(municipioDTO);
 
         Municipio entity = new Municipio();
-        entity.setDescricao(municipioDTO.descricao());
+        entity.setNome(municipioDTO.nome());
         entity.setEstado(estadoRepository.findById(municipioDTO.idEstado()));
         repository.persist(entity);
 
@@ -67,7 +67,7 @@ public class MunicipioServiceImpl implements MunicipioService {
 
         Municipio entity = repository.findById(id);
 
-        entity.setDescricao(municipioDTO.descricao());
+        entity.setNome(municipioDTO.nome());
         entity.setEstado(estadoRepository.findById(municipioDTO.idEstado()));
 
         return new MunicipioResponseDTO(entity);
@@ -87,8 +87,8 @@ public class MunicipioServiceImpl implements MunicipioService {
     }
 
     @Override
-    public List<MunicipioResponseDTO> findByDescricao(String descricao) {
-        List<Municipio> list = repository.findByDescricao(descricao);
+    public List<MunicipioResponseDTO> findByNome(String descricao) {
+        List<Municipio> list = repository.findByNome(descricao);
         return list.stream().map(MunicipioResponseDTO::new).collect(Collectors.toList());
     }
 

@@ -48,7 +48,7 @@ public class MunicipioResource {
     @POST
 //    @RolesAllowed({"Admin"})
     public Response insert(MunicipioDTO dto) {
-        LOG.infof("Inserindo um municipio: %s", dto.descricao());
+        LOG.infof("Inserindo um municipio: %s", dto.nome());
         Result result = null;
 
         try {
@@ -71,7 +71,7 @@ public class MunicipioResource {
     @Path("/{id}")
 //    @RolesAllowed({"Admin"})
     public Response update(@PathParam("id") Long id, MunicipioDTO dto) {
-        LOG.infof("Alterando um municipio: %s", dto.descricao());
+        LOG.infof("Alterando um municipio: %s", dto.nome());
         Result result = null;
 
         try {
@@ -114,13 +114,13 @@ public class MunicipioResource {
     }
 
     @GET
-    @Path("/search/{descricao}")
-    public Response search(@PathParam("descricao") String descricao) {
-        LOG.infof("Pesquisando municípios pelo nome: %s", descricao);
+    @Path("/search/{nome}")
+    public Response search(@PathParam("nome") String nome) {
+        LOG.infof("Pesquisando municípios pelo nome: %s", nome);
         Result result = null;
 
         try {
-            List<MunicipioResponseDTO> response = service.findByDescricao(descricao);
+            List<MunicipioResponseDTO> response = service.findByNome(nome);
             LOG.infof("Pesquisa realizada com sucesso.");
             return Response.ok(response).build();
         } catch (ConstraintViolationException e) {

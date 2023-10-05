@@ -10,6 +10,8 @@ public record BoletoRecebimentoDTO(
 
         @NotBlank(message = "O CNPJ deve ser informado.") @CNPJ String cnpj,
 
-        @NotBlank(message = "O agência deve ser informado.") String agencia
+        @NotBlank(message = "A agência deve ser informada.") String agencia,
+
+        @NotBlank(message = "A conta deve ser informada.") String conta
 ) {
 }
