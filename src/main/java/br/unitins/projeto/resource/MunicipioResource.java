@@ -4,17 +4,18 @@ import br.unitins.projeto.application.Result;
 import br.unitins.projeto.dto.municipio.MunicipioDTO;
 import br.unitins.projeto.dto.municipio.MunicipioResponseDTO;
 import br.unitins.projeto.service.municipio.MunicipioService;
-import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
@@ -33,9 +34,10 @@ public class MunicipioResource {
     private static final Logger LOG = Logger.getLogger(MunicipioResource.class);
 
     @GET
-    public List<MunicipioResponseDTO> getAll() {
+    public List<MunicipioResponseDTO> getAll(@QueryParam("page") @DefaultValue("0") int page,
+                                             @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
         LOG.info("Buscando todos os municipios.");
-        return service.getAll();
+        return service.getAll(page, pageSize);
     }
 
     @GET
@@ -115,12 +117,14 @@ public class MunicipioResource {
 
     @GET
     @Path("/search/{nome}")
-    public Response search(@PathParam("nome") String nome) {
+    public Response search(@PathParam("nome") String nome,
+                           @QueryParam("page") @DefaultValue("0") int page,
+                           @QueryParam("pageSize") @DefaultValue("10") int pageSize) {
         LOG.infof("Pesquisando municípios pelo nome: %s", nome);
         Result result = null;
 
         try {
-            List<MunicipioResponseDTO> response = service.findByNome(nome);
+            List<MunicipioResponseDTO> response = service.findByNome(nome, page, pageSize);
             LOG.infof("Pesquisa realizada com sucesso.");
             return Response.ok(response).build();
         } catch (ConstraintViolationException e) {
@@ -133,6 +137,18 @@ public class MunicipioResource {
         }
 
         return Response.status(Status.NOT_FOUND).entity(result).build();
+    }
+
+    @GET
+    @Path("/count")
+    public long count(){
+        return service.count();
+    }
+
+    @GET
+    @Path("/search/{nome}/count")
+    public long count(@PathParam("nome") String nome) {
+        return service.countByNome(nome);
     }
 
 }

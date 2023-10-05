@@ -7,7 +7,7 @@ import br.unitins.projeto.dto.municipio.MunicipioResponseDTO;
 
 public interface MunicipioService {
 
-    List<MunicipioResponseDTO> getAll();
+    List<MunicipioResponseDTO> getAll(int page, int pageSize);
 
     MunicipioResponseDTO findById(Long id);
 
@@ -17,8 +17,9 @@ public interface MunicipioService {
 
     void delete(Long id);
 
-    List<MunicipioResponseDTO> findByNome(String descricao);
+    List<MunicipioResponseDTO> findByNome(String descricao, int page, int pageSize);
 
     Long count();
 
+    Long countByNome(String nome);
 }
