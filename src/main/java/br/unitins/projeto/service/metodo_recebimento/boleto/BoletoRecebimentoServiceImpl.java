@@ -95,7 +95,7 @@ public class BoletoRecebimentoServiceImpl implements BoletoRecebimentoService {
 
     @Override
     public long count() {
-        return repository.count();
+        return repository.listAllInativo().count();
     }
 
     @Override
