@@ -18,11 +18,13 @@ public interface EspecieService {
 
     void delete(Long id);
 
-    List<EspecieResponseDTO> findByNome(String nome);
-
     EspecieResponseDTO alterarSituacao(Long id, AlterarSituacaoDTO dto);
 
     List<EspecieResponseDTO> findAllPaginado(int pageNumber, int pageSize);
+
+    Long countByNome(String nome, Boolean ativo);
+
+    List<EspecieResponseDTO> findByNome(String nome, Boolean ativo, int pageNumber, int pageSize);
 
     Long count();
 

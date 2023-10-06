@@ -14,6 +14,7 @@ import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
 import jakarta.ws.rs.NotFoundException;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -82,12 +83,6 @@ public class EspecieServiceImpl implements EspecieService {
     }
 
     @Override
-    public List<EspecieResponseDTO> findByNome(String nome) {
-        List<Especie> list = repository.findByNome(nome);
-        return list.stream().map(EspecieResponseDTO::new).collect(Collectors.toList());
-    }
-
-    @Override
     @Transactional
     public EspecieResponseDTO alterarSituacao(Long id, AlterarSituacaoDTO dto) {
         Especie entity = repository.findById(id);
@@ -110,4 +105,19 @@ public class EspecieServiceImpl implements EspecieService {
         return lista.stream().map(EspecieResponseDTO::new).collect(Collectors.toList());
     }
 
+    @Override
+    public Long countByNome(String nome,Boolean ativo) {
+        return repository.findByFiltro(nome, ativo).count();
+    }
+
+        @Override
+    public List<EspecieResponseDTO> findByNome(String nome,Boolean ativo, int pageNumber, int pageSize) {
+        List<Especie> list = this.repository.findByFiltro(nome, ativo)
+                .page(Page.of(pageNumber, pageSize))
+                .list().stream()
+                .sorted(Comparator.comparing(Especie::getNome))
+                .collect(Collectors.toList());
+
+        return list.stream().map(EspecieResponseDTO::new).collect(Collectors.toList());
+    }
 }

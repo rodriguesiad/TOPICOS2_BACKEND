@@ -153,17 +153,20 @@ public class EspecieResource {
     }
 
     @GET
-    @Path("/search/{nome}")
-    public Response search(@PathParam("nome") String nome) {
-        LOG.infof("Pesquisando especies pelo nome: %s", nome);
+    @Path("/search")
+    public Response search(@QueryParam("page") int pageNumber,
+                           @QueryParam("size") int pageSize,
+                           @QueryParam("nome") String nome,
+                           @QueryParam("ativo") Boolean ativo) {
+        LOG.infof("Pesquisando raças pelo nome: %s", nome);
         Result result = null;
 
         try {
-            List<EspecieResponseDTO> response = service.findByNome(nome);
+            List<EspecieResponseDTO> response = service.findByNome(nome, ativo, pageNumber, pageSize);
             LOG.infof("Pesquisa realizada com sucesso.");
             return Response.ok(response).build();
         } catch (ConstraintViolationException e) {
-            LOG.error("Erro ao pesquisar especies.");
+            LOG.error("Erro ao pesquisar raças.");
             LOG.debug(e.getMessage());
             result = new Result(e.getConstraintViolations());
         } catch (Exception e) {
