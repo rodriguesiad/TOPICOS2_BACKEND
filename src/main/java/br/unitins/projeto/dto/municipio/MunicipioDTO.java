@@ -10,7 +10,8 @@ public record MunicipioDTO(
         @Size(max = 60, message = "O campo descrição deve possuir no máximo 60 caracteres.") 
         String descricao,
 
-        @NotNull(message = "O estado deve ser informado.") Long idEstado
+        @NotNull(message = "O estado deve ser informado.") 
+        Long idEstado
 
 ) {
 

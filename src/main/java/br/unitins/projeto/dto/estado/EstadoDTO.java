@@ -10,8 +10,8 @@ public record EstadoDTO(
     String sigla,
 
     @NotBlank(message = "O campo descriçao deve ser informado.")
-    @Size(max = 60, message = "O campo descrição deve possuir no máximo 60 caracteres.")
-    String descricao
+    @Size(max = 60, message = "O campo nomee deve possuir no máximo 60 caracteres.")
+    String nome
 
 ) {
   

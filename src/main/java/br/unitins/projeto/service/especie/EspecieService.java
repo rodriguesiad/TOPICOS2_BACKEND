@@ -1,6 +1,5 @@
 package br.unitins.projeto.service.especie;
 
-import br.unitins.projeto.dto.categoria.CategoriaResponseDTO;
 import br.unitins.projeto.dto.especie.EspecieDTO;
 import br.unitins.projeto.dto.especie.EspecieResponseDTO;
 import br.unitins.projeto.dto.situacao.AlterarSituacaoDTO;
@@ -22,6 +21,8 @@ public interface EspecieService {
     List<EspecieResponseDTO> findByNome(String nome);
 
     EspecieResponseDTO alterarSituacao(Long id, AlterarSituacaoDTO dto);
+
+    List<EspecieResponseDTO> findAllPaginado(int pageNumber, int pageSize);
 
     Long count();
 

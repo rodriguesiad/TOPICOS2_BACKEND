@@ -5,6 +5,7 @@ import br.unitins.projeto.dto.especie.EspecieResponseDTO;
 import br.unitins.projeto.dto.situacao.AlterarSituacaoDTO;
 import br.unitins.projeto.model.Especie;
 import br.unitins.projeto.repository.EspecieRepository;
+import io.quarkus.panache.common.Page;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -49,6 +50,7 @@ public class EspecieServiceImpl implements EspecieService {
 
         Especie entity = new Especie();
         entity.setNome(especieDto.nome());
+        entity.setAtivo(true);
         repository.persist(entity);
 
         return new EspecieResponseDTO(entity);
@@ -61,6 +63,7 @@ public class EspecieServiceImpl implements EspecieService {
 
         Especie entity = repository.findById(id);
         entity.setNome(especieDto.nome());
+        entity.setAtivo(true);
 
         return new EspecieResponseDTO(entity);
     }
@@ -96,6 +99,15 @@ public class EspecieServiceImpl implements EspecieService {
     @Override
     public Long count() {
         return repository.count();
+    }
+
+    @Override
+    public List<EspecieResponseDTO> findAllPaginado(int pageNumber, int pageSize) {
+        List<Especie> lista = this.repository.findAll()
+                .page(Page.of(pageNumber, pageSize))
+                .list();
+
+        return lista.stream().map(EspecieResponseDTO::new).collect(Collectors.toList());
     }
 
 }

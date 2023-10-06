@@ -1,6 +1,5 @@
 package br.unitins.projeto.service.raca;
 
-import br.unitins.projeto.dto.categoria.CategoriaResponseDTO;
 import br.unitins.projeto.dto.raca.RacaDTO;
 import br.unitins.projeto.dto.raca.RacaResponseDTO;
 import br.unitins.projeto.dto.situacao.AlterarSituacaoDTO;
