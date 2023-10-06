@@ -11,12 +11,23 @@ import io.quarkus.hibernate.orm.panache.PanacheRepository;
 @ApplicationScoped
 public class UsuarioRepository implements PanacheRepository<Usuario> {
 
-    public PanacheQuery<Usuario> findByCampoBusca(String campoBusca) {
-        if (campoBusca == null)
-            return null;
+    public PanacheQuery<Usuario> findByCampoBusca(String campoBusca, Boolean ativo) {
+        if (campoBusca != null && ativo != null) {
+            return find("(UPPER(pessoaFisica.nome) LIKE ?1 OR pessoaFisica.cpf LIKE ?1)  AND ativo = ?2 ", "%" + campoBusca.toUpperCase() + "%", ativo);
+        }
 
-        return find("UPPER(pessoaFisica.nome) LIKE ?1 OR pessoaFisica.cpf LIKE ?1 ", "%" + campoBusca.toUpperCase() + "%");
+        if (campoBusca != null && ativo == null) {
+            return find("UPPER(pessoaFisica.nome) LIKE ?1 OR pessoaFisica.cpf LIKE ?1 ", "%" + campoBusca.toUpperCase() + "%");
+        }
+
+        if (campoBusca == null && ativo != null) {
+            return find("ativo = ?1 ", "%" + campoBusca.toUpperCase() + "%", ativo);
+        }
+
+        return null;
     }
+
+
 
     public Usuario findByLoginAndSenha(String login, String senha) {
         if (login == null || senha == null)

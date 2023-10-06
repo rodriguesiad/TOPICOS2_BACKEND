@@ -17,7 +17,7 @@ public interface CategoriaService {
 
     void delete(Long id);
 
-    List<CategoriaResponseDTO> findByNome(String nome, int pageNumber, int pageSize);
+    List<CategoriaResponseDTO> findByCampoBusca(String nome, Boolean ativo, int pageNumber, int pageSize);
 
     CategoriaResponseDTO alterarSituacao(Long id, Boolean situacao);
 
@@ -25,6 +25,6 @@ public interface CategoriaService {
 
     List<CategoriaResponseDTO> findAllPaginado(int pageNumber, int pageSize);
 
-    Long countByNome(String nome);
+    Long countByCampoBusca(String nome, Boolean ativo);
 
 }

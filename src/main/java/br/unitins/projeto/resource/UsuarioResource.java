@@ -95,16 +95,17 @@ public class UsuarioResource {
     }
 
     @GET
-    @Path("/search/{campoBusca}")
+    @Path("/search")
 //    @RolesAllowed({"Admin"})
-    public Response search(@PathParam("campoBusca") String campoBusca,
-                           @QueryParam("page") int pageNumber,
-                           @QueryParam("size") int pageSize) {
+    public Response search(@QueryParam("page") int pageNumber,
+                           @QueryParam("size") int pageSize,
+                           @QueryParam("campoBusca") String campoBusca,
+                           @QueryParam("ativo") Boolean ativo) {
         LOG.infof("Pesquisando usuarios pelo campoBusca: %s", campoBusca);
         Result result = null;
 
         try {
-            List<UsuarioResponseDTO> response = service.findByCampoBusca(campoBusca, pageNumber, pageSize);
+            List<CadastroAdminResponseDTO> response = service.findByCampoBusca(campoBusca, ativo, pageNumber, pageSize);
             LOG.infof("Pesquisa realizada com sucesso.");
             return Response.ok(response).build();
         } catch (ConstraintViolationException e) {
@@ -120,9 +121,11 @@ public class UsuarioResource {
     }
 
     @GET
-    @Path("/search/{campoBusca}/count")
-    public Long count(@PathParam("campoBusca") String campoBusca) {
-        return service.countByCampoBusca(campoBusca);
+    @Path("/search/count")
+    public Long count(@QueryParam("campoBusca") String campoBusca,
+                      @QueryParam("ativo") Boolean ativo
+    ) {
+        return service.countByCampoBusca(campoBusca, ativo);
     }
 
     @PUT

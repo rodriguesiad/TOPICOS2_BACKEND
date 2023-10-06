@@ -127,20 +127,20 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public List<UsuarioResponseDTO> findByCampoBusca(String campoBusca, int pageNumber, int pageSize) {
-        List<Usuario> list = repository.findByCampoBusca(campoBusca)
+    public List<CadastroAdminResponseDTO> findByCampoBusca(String campoBusca, Boolean ativo, int pageNumber, int pageSize) {
+        List<Usuario> list = repository.findByCampoBusca(campoBusca, ativo)
                 .page(Page.of(pageNumber, pageSize))
                 .list().stream()
                 .sorted(Comparator.comparing(u -> u.getPessoaFisica().getNome()))
                 .collect(Collectors.toList());
 
-        return list.stream().map(usuario -> UsuarioResponseDTO.valueOf(usuario)).collect(Collectors.toList());
+        return list.stream().map(usuario -> CadastroAdminResponseDTO.valueOf(usuario)).collect(Collectors.toList());
 
     }
 
     @Override
-    public Long countByCampoBusca(String campoBusca) {
-        return repository.findByCampoBusca(campoBusca).count();
+    public Long countByCampoBusca(String campoBusca, Boolean ativo) {
+        return repository.findByCampoBusca(campoBusca, ativo).count();
     }
 
 
