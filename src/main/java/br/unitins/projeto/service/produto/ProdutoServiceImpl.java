@@ -1,20 +1,14 @@
 package br.unitins.projeto.service.produto;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import br.unitins.projeto.dto.especie.EspecieResponseDTO;
-import br.unitins.projeto.dto.produto.ProdutoDTO;
-import br.unitins.projeto.dto.produto.ProdutoResponseDTO;
-import br.unitins.projeto.dto.produto.ProdutoDTO;
-import br.unitins.projeto.dto.produto.ProdutoResponseDTO;
 import br.unitins.projeto.dto.produto.ProdutoDTO;
 import br.unitins.projeto.dto.produto.ProdutoResponseDTO;
 import br.unitins.projeto.dto.situacao.AlterarSituacaoDTO;
-import br.unitins.projeto.model.Especie;
 import br.unitins.projeto.model.PorteAnimal;
-import br.unitins.projeto.model.Produto;
 import br.unitins.projeto.model.Produto;
 import br.unitins.projeto.repository.CategoriaRepository;
 import br.unitins.projeto.repository.EspecieRepository;
@@ -120,8 +114,13 @@ public class ProdutoServiceImpl implements ProdutoService {
     }
 
     @Override
-    public List<ProdutoResponseDTO> findByNome(String nome) {
-        List<Produto> list = repository.findByNome(nome);
+    public List<ProdutoResponseDTO> findByNome(String nome,Boolean ativo, int pageNumber, int pageSize) {
+        List<Produto> list = this.repository.findByFiltro(nome, ativo)
+                .page(Page.of(pageNumber, pageSize))
+                .list().stream()
+                .sorted(Comparator.comparing(Produto::getNome))
+                .collect(Collectors.toList());
+
         return list.stream().map(ProdutoResponseDTO::new).collect(Collectors.toList());
     }
 
@@ -146,6 +145,11 @@ public class ProdutoServiceImpl implements ProdutoService {
                 .list();
 
         return lista.stream().map(ProdutoResponseDTO::new).collect(Collectors.toList());
+    }
+
+    @Override
+    public Long countByNome(String nome,Boolean ativo) {
+        return repository.findByFiltro(nome, ativo).count();
     }
 
 }
