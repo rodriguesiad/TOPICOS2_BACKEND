@@ -2,9 +2,9 @@ package br.unitins.projeto.service.raca;
 
 import br.unitins.projeto.dto.raca.RacaDTO;
 import br.unitins.projeto.dto.raca.RacaResponseDTO;
-import br.unitins.projeto.dto.situacao.AlterarSituacaoDTO;
 import br.unitins.projeto.model.Raca;
 import br.unitins.projeto.repository.RacaRepository;
+import io.quarkus.panache.common.Page;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -13,6 +13,7 @@ import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
 import jakarta.ws.rs.NotFoundException;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -82,16 +83,38 @@ public class RacaServiceImpl implements RacaService {
     }
 
     @Override
-    public List<RacaResponseDTO> findByNome(String nome) {
-        List<Raca> list = repository.findByNome(nome);
+    public List<RacaResponseDTO> findByNome(String nome,Boolean ativo, int pageNumber, int pageSize) {
+        List<Raca> list = this.repository.findByFiltro(nome, ativo)
+                .page(Page.of(pageNumber, pageSize))
+                .list().stream()
+                .sorted(Comparator.comparing(Raca::getNome))
+                .collect(Collectors.toList());
+
         return list.stream().map(RacaResponseDTO::new).collect(Collectors.toList());
     }
 
     @Override
+    public List<RacaResponseDTO> findAllPaginado(int pageNumber, int pageSize) {
+        List<Raca> lista = this.repository.findAll()
+                .page(Page.of(pageNumber, pageSize))
+                .list().stream()
+                .sorted(Comparator.comparing(Raca::getNome))
+                .collect(Collectors.toList());
+        ;
+
+        return lista.stream().map(RacaResponseDTO::new).collect(Collectors.toList());
+    }
+
+    @Override
+    public Long countByNome(String nome,Boolean ativo) {
+        return repository.findByFiltro(nome, ativo).count();
+    }
+
+    @Override
     @Transactional
-    public RacaResponseDTO alterarSituacao(Long id, AlterarSituacaoDTO dto) {
+    public RacaResponseDTO alterarSituacao(Long id, Boolean situacao) {
         Raca entity = repository.findById(id);
-        entity.setAtivo(dto.situacao());
+        entity.setAtivo(situacao);
 
         return new RacaResponseDTO(entity);
     }

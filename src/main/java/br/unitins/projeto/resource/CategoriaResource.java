@@ -3,7 +3,6 @@ package br.unitins.projeto.resource;
 import br.unitins.projeto.application.Result;
 import br.unitins.projeto.dto.categoria.CategoriaDTO;
 import br.unitins.projeto.dto.categoria.CategoriaResponseDTO;
-import br.unitins.projeto.dto.situacao.AlterarSituacaoDTO;
 import br.unitins.projeto.service.categoria.CategoriaService;
 import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolationException;
@@ -109,12 +108,12 @@ public class CategoriaResource {
     @PUT
     @Path("/situacao/{id}")
 //    @RolesAllowed({"Admin"})
-    public Response alterarSituacao(@PathParam("id") Long id, AlterarSituacaoDTO dto) {
+    public Response alterarSituacao(@PathParam("id") Long id, Boolean situacao) {
         LOG.infof("Alterando situação da categoria");
         Result result = null;
 
         try {
-            CategoriaResponseDTO response = service.alterarSituacao(id, dto);
+            CategoriaResponseDTO response = service.alterarSituacao(id, situacao);
             LOG.infof("Categoria (%d) alterado com sucesso.", response.id());
             return Response.ok(response).build();
         } catch (ConstraintViolationException e) {
@@ -153,13 +152,16 @@ public class CategoriaResource {
     }
 
     @GET
-    @Path("/search/{nome}")
-    public Response search(@PathParam("nome") String nome) {
-        LOG.infof("Pesquisando categorias pelo nome: %s", nome);
+    @Path("/search")
+    public Response search(@QueryParam("page") int pageNumber,
+                           @QueryParam("size") int pageSize,
+                           @QueryParam("nome") String nome,
+                           @QueryParam("ativo") Boolean ativo) {
+        LOG.infof("Pesquisando categorias por filtro");
         Result result = null;
 
         try {
-            List<CategoriaResponseDTO> response = service.findByNome(nome);
+            List<CategoriaResponseDTO> response = service.findByCampoBusca(nome, ativo, pageNumber, pageSize);
             LOG.infof("Pesquisa realizada com sucesso.");
             return Response.ok(response).build();
         } catch (ConstraintViolationException e) {
@@ -172,6 +174,13 @@ public class CategoriaResource {
         }
 
         return Response.status(Status.NOT_FOUND).entity(result).build();
+    }
+
+    @GET
+    @Path("/search/count")
+    public Long count(@QueryParam("nome") String nome,
+                      @QueryParam("ativo") Boolean ativo) {
+        return service.countByCampoBusca(nome, ativo);
     }
 
 }

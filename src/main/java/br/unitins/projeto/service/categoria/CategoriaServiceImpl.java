@@ -2,7 +2,6 @@ package br.unitins.projeto.service.categoria;
 
 import br.unitins.projeto.dto.categoria.CategoriaDTO;
 import br.unitins.projeto.dto.categoria.CategoriaResponseDTO;
-import br.unitins.projeto.dto.situacao.AlterarSituacaoDTO;
 import br.unitins.projeto.model.Categoria;
 import br.unitins.projeto.repository.CategoriaRepository;
 import io.quarkus.panache.common.Page;
@@ -14,6 +13,7 @@ import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
 import jakarta.ws.rs.NotFoundException;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -81,16 +81,26 @@ public class CategoriaServiceImpl implements CategoriaService {
     }
 
     @Override
-    public List<CategoriaResponseDTO> findByNome(String nome) {
-        List<Categoria> list = repository.findByNome(nome);
+    public List<CategoriaResponseDTO> findByCampoBusca(String nome, Boolean ativo, int pageNumber, int pageSize) {
+        List<Categoria> list = this.repository.findByFiltro(nome, ativo)
+                .page(Page.of(pageNumber, pageSize))
+                .list().stream()
+                .sorted(Comparator.comparing(Categoria::getNome))
+                .collect(Collectors.toList());
+
         return list.stream().map(CategoriaResponseDTO::new).collect(Collectors.toList());
     }
 
     @Override
+    public Long countByCampoBusca(String nome, Boolean ativo) {
+        return repository.findByFiltro(nome, ativo).count();
+    }
+
+    @Override
     @Transactional
-    public CategoriaResponseDTO alterarSituacao(Long id, AlterarSituacaoDTO dto) {
+    public CategoriaResponseDTO alterarSituacao(Long id, Boolean situacao) {
         Categoria entity = repository.findById(id);
-        entity.setAtivo(dto.situacao());
+        entity.setAtivo(situacao);
 
         return new CategoriaResponseDTO(entity);
     }
@@ -104,7 +114,9 @@ public class CategoriaServiceImpl implements CategoriaService {
     public List<CategoriaResponseDTO> findAllPaginado(int pageNumber, int pageSize) {
         List<Categoria> lista = this.repository.findAll()
                 .page(Page.of(pageNumber, pageSize))
-                .list();
+                .list().stream()
+                .sorted(Comparator.comparing(Categoria::getNome))
+                .collect(Collectors.toList());
 
         return lista.stream().map(CategoriaResponseDTO::new).collect(Collectors.toList());
     }

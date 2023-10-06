@@ -3,6 +3,8 @@ package br.unitins.projeto.resource;
 import br.unitins.projeto.application.Result;
 import br.unitins.projeto.dto.usuario.UsuarioDTO;
 import br.unitins.projeto.dto.usuario.UsuarioResponseDTO;
+import br.unitins.projeto.dto.usuario.cadastro.CadastroAdminDTO;
+import br.unitins.projeto.dto.usuario.cadastro.CadastroAdminResponseDTO;
 import br.unitins.projeto.service.usuario.UsuarioService;
 import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolationException;
@@ -11,9 +13,11 @@ import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
@@ -22,9 +26,7 @@ import org.jboss.logging.Logger;
 import java.util.List;
 
 @Path("/usuarios")
-
 @Consumes(MediaType.APPLICATION_JSON)
-
 @Produces(MediaType.APPLICATION_JSON)
 public class UsuarioResource {
 
@@ -93,26 +95,117 @@ public class UsuarioResource {
     }
 
     @GET
-    @Path("/count")
+    @Path("/search")
 //    @RolesAllowed({"Admin"})
-    public Long count() {
-        LOG.info("Buscando número de usuários cadastrados.");
-        return service.count();
-    }
-
-    @GET
-    @Path("/search/{nome}")
-//    @RolesAllowed({"Admin"})
-    public Response search(@PathParam("nome") String nome) {
-        LOG.infof("Pesquisando usuarios pelo nome: %s", nome);
+    public Response search(@QueryParam("page") int pageNumber,
+                           @QueryParam("size") int pageSize,
+                           @QueryParam("campoBusca") String campoBusca,
+                           @QueryParam("ativo") Boolean ativo) {
+        LOG.infof("Pesquisando usuarios pelo campoBusca: %s", campoBusca);
         Result result = null;
 
         try {
-            List<UsuarioResponseDTO> response = service.findByNome(nome);
+            List<CadastroAdminResponseDTO> response = service.findByCampoBusca(campoBusca, ativo, pageNumber, pageSize);
             LOG.infof("Pesquisa realizada com sucesso.");
             return Response.ok(response).build();
         } catch (ConstraintViolationException e) {
             LOG.error("Erro ao pesquisar usuarios.");
+            LOG.debug(e.getMessage());
+            result = new Result(e.getConstraintViolations());
+        } catch (Exception e) {
+            LOG.fatal("Erro sem identificacao: " + e.getMessage());
+            result = new Result(e.getMessage(), false);
+        }
+
+        return Response.status(Status.NOT_FOUND).entity(result).build();
+    }
+
+    @GET
+    @Path("/search/count")
+    public Long count(@QueryParam("campoBusca") String campoBusca,
+                      @QueryParam("ativo") Boolean ativo
+    ) {
+        return service.countByCampoBusca(campoBusca, ativo);
+    }
+
+    @PUT
+    @Path("admin/situacao/{id}")
+//    @RolesAllowed({"Admin"})
+    public Response alterarSituacao(@PathParam("id") Long id, Boolean situacao) {
+        LOG.infof("Alterando situação da categoria");
+        Result result = null;
+
+        try {
+            CadastroAdminResponseDTO response = service.alterarSituacao(id, situacao);
+            LOG.infof("Categoria (%d) alterado com sucesso.", response.id());
+            return Response.ok(response).build();
+        } catch (ConstraintViolationException e) {
+            LOG.error("Erro ao alterar uma categoria.");
+            LOG.debug(e.getMessage());
+            result = new Result(e.getConstraintViolations());
+        } catch (Exception e) {
+            LOG.fatal("Erro sem identificacao: " + e.getMessage());
+            result = new Result(e.getMessage(), false);
+        }
+
+        return Response.status(Status.NOT_FOUND).entity(result).build();
+    }
+
+    @GET
+    @Path("/admin/paginado")
+    public List<CadastroAdminResponseDTO> getAllPaginado(
+            @QueryParam("page") int pageNumber,
+            @QueryParam("size") int pageSize
+    ) {
+        return service.findAllAdminPaginado(pageNumber, pageSize);
+    }
+
+    @GET
+    @Path("/admin/{id}")
+    public CadastroAdminResponseDTO findByIdPorAdmin(@PathParam("id") Long id) {
+        return service.findByIdPorAdmin(id);
+    }
+
+    @GET
+    @Path("/admin/count")
+    public Long count() {
+        return service.count();
+    }
+
+    @POST
+    @Path("/admin")
+    public Response insertAdmin(@Valid CadastroAdminDTO dto) {
+        LOG.infof("Inserindo um usuario: %s", dto.nome());
+        Result result = null;
+
+        try {
+            CadastroAdminResponseDTO response = service.cadastrarPorAdmin(dto);
+            LOG.infof("Usuario (%d) criado com sucesso.", response.id());
+            return Response.status(Status.CREATED).entity(response).build();
+        } catch (ConstraintViolationException e) {
+            LOG.error("Erro ao incluir um usuario.");
+            LOG.debug(e.getMessage());
+            result = new Result(e.getConstraintViolations());
+        } catch (Exception e) {
+            LOG.fatal("Erro sem identificacao: " + e.getMessage());
+            result = new Result(e.getMessage(), false);
+        }
+
+        return Response.status(Status.NOT_FOUND).entity(result).build();
+    }
+
+    @PUT
+    @Path("/admin/{id}")
+    public Response updateAdmin(@PathParam("id") Long id, @Valid CadastroAdminDTO dto) {
+        LOG.infof("Alterando um usuario: %s", dto.nome());
+        Result result = null;
+
+        try {
+            CadastroAdminResponseDTO response = service.alterarPorAdmin(id, dto);
+            LOG.infof("Usuario (%d) alterado com sucesso.", response.id());
+            return Response.ok(response).build();
+        } catch (ConstraintViolationException e) {
+            LOG.error("Erro ao alterar um usuario.");
             LOG.debug(e.getMessage());
             result = new Result(e.getConstraintViolations());
         } catch (Exception e) {

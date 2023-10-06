@@ -6,11 +6,11 @@ import br.unitins.projeto.model.Municipio;
 
 public record MunicipioResponseDTO(
         Long id,
-        String descricao,
+        String nome,
         EstadoResponseDTO estado) {
 
     public MunicipioResponseDTO(Municipio entity) {
-        this(entity.getId(), entity.getDescricao(), gerarEstadoDTO(entity.getEstado()));
+        this(entity.getId(), entity.getNome(), gerarEstadoDTO(entity.getEstado()));
     }
 
     public static EstadoResponseDTO gerarEstadoDTO(Estado estado) {

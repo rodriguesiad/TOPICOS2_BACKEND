@@ -14,6 +14,9 @@ public class PixRecebimento extends MetodoDeRecebimento {
     @Column(name = "tipo_chave", nullable = false)
     private TipoChavePix tipoChavePix;
 
+    @Column(nullable = false)
+    private Boolean ativo;
+
     public String getChave() {
         return chave;
     }
@@ -28,6 +31,14 @@ public class PixRecebimento extends MetodoDeRecebimento {
 
     public void setTipoChavePix(TipoChavePix tipoChavePix) {
         this.tipoChavePix = tipoChavePix;
+    }
+
+    public Boolean getAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(Boolean ativo) {
+        this.ativo = ativo;
     }
 
 }

@@ -67,7 +67,7 @@ public class UsuarioLogadoResource {
     public Response getPerfilUsuario() {
         String login = jwt.getSubject();
         UsuarioResponseDTO usuario = service.findByLogin(login);
-        LOG.info("Buscando perfil do usuário logado.");
+        LOG.info("Buscando perfis do usuário logado.");
         return Response.ok(usuario).build();
     }
 

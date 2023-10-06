@@ -5,6 +5,8 @@ import br.unitins.projeto.dto.endereco.EnderecoResponseDTO;
 import br.unitins.projeto.dto.endereco.EnderecoUpdateDTO;
 import br.unitins.projeto.dto.usuario.UsuarioDTO;
 import br.unitins.projeto.dto.usuario.UsuarioResponseDTO;
+import br.unitins.projeto.dto.usuario.cadastro.CadastroAdminDTO;
+import br.unitins.projeto.dto.usuario.cadastro.CadastroAdminResponseDTO;
 import br.unitins.projeto.dto.usuario.dados_pessoais.DadosPessoaisDTO;
 import br.unitins.projeto.dto.usuario.dados_pessoais.DadosPessoaisResponseDTO;
 import br.unitins.projeto.dto.usuario.enderecos.UsuarioEnderecoResponseDTO;
@@ -15,6 +17,7 @@ import br.unitins.projeto.model.DefaultEntity;
 import br.unitins.projeto.model.Endereco;
 import br.unitins.projeto.model.Perfil;
 import br.unitins.projeto.model.PessoaFisica;
+import br.unitins.projeto.model.Raca;
 import br.unitins.projeto.model.Telefone;
 import br.unitins.projeto.model.Usuario;
 import br.unitins.projeto.repository.ProdutoRepository;
@@ -22,6 +25,7 @@ import br.unitins.projeto.repository.UsuarioRepository;
 import br.unitins.projeto.service.endereco.EnderecoService;
 import br.unitins.projeto.service.hash.HashService;
 import br.unitins.projeto.service.telefone.TelefoneService;
+import io.quarkus.panache.common.Page;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -32,7 +36,7 @@ import jakarta.validation.Validator;
 import jakarta.ws.rs.NotFoundException;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -88,15 +92,18 @@ public class UsuarioServiceImpl implements UsuarioService {
         entity.setLogin(usuarioDTO.login());
         entity.setSenha(hashService.getHashSenha(usuarioDTO.senha()));
 
-        List<Telefone> telefonesModel = usuarioDTO.telefones().stream().map(telefoneDTO -> {
-            return telefoneService.toModel(telefoneDTO);
-        }).collect(Collectors.toList());
+        if (usuarioDTO.telefones() != null){
+            List<Telefone> telefonesModel = usuarioDTO.telefones().stream().map(telefoneDTO -> {
+                return telefoneService.toModel(telefoneDTO);
+            }).collect(Collectors.toList());
 
-        entity.setListaTelefone(telefonesModel);
+            entity.setListaTelefone(telefonesModel);
+        }
+
 
         entity.setPessoaFisica(pessoa);
 
-        Set<Perfil> perfis = new HashSet<>();
+        List<Perfil> perfis = new ArrayList<>();
         perfis.add(Perfil.COMUM);
         entity.setPerfis(perfis);
 
@@ -120,11 +127,22 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public List<UsuarioResponseDTO> findByNome(String nome) {
-        List<Usuario> list = repository.findByNome(nome);
-        return list.stream().map(usuario -> UsuarioResponseDTO.valueOf(usuario)).collect(Collectors.toList());
+    public List<CadastroAdminResponseDTO> findByCampoBusca(String campoBusca, Boolean ativo, int pageNumber, int pageSize) {
+        List<Usuario> list = repository.findByCampoBusca(campoBusca, ativo)
+                .page(Page.of(pageNumber, pageSize))
+                .list().stream()
+                .sorted(Comparator.comparing(u -> u.getPessoaFisica().getNome()))
+                .collect(Collectors.toList());
+
+        return list.stream().map(usuario -> CadastroAdminResponseDTO.valueOf(usuario)).collect(Collectors.toList());
 
     }
+
+    @Override
+    public Long countByCampoBusca(String campoBusca, Boolean ativo) {
+        return repository.findByCampoBusca(campoBusca, ativo).count();
+    }
+
 
     @Override
     public Long count() {
@@ -286,6 +304,130 @@ public class UsuarioServiceImpl implements UsuarioService {
         entity.setNomeImagem(nomeImagem);
 
         return UsuarioResponseDTO.valueOf(entity);
+    }
+
+    @Override
+    @Transactional
+    public CadastroAdminResponseDTO cadastrarPorAdmin(CadastroAdminDTO dto) {
+
+        Usuario entity = new Usuario();
+        PessoaFisica pessoa = new PessoaFisica();
+
+        pessoa.setNome(dto.nome());
+        pessoa.setEmail(dto.email());
+        pessoa.setCpf(dto.cpf());
+        pessoa.setDataNascimento(dto.dataNascimento());
+
+        entity.setLogin(dto.email());
+        entity.setSenha(hashService.getHashSenha(dto.senha()));
+
+        if (dto.telefones() != null){
+            List<Telefone> telefonesModel = dto.telefones().stream().map(telefoneDTO -> {
+                return telefoneService.toModel(telefoneDTO);
+            }).collect(Collectors.toList());
+
+            entity.setListaTelefone(telefonesModel);
+        }
+
+
+        entity.setPessoaFisica(pessoa);
+
+        List<Perfil> perfis = new ArrayList<>();
+
+        if (dto.perfis() != null) {
+            for (Integer idPerfil : dto.perfis() ){
+                if (!Perfil.valueOf(idPerfil).equals(Perfil.COMUM)){
+                    perfis.add(Perfil.valueOf(idPerfil));
+                }
+            }
+        }
+
+        perfis.add(Perfil.COMUM);
+        entity.setPerfis(perfis);
+
+        entity.setAtivo(true);
+
+        repository.persist(entity);
+
+        return CadastroAdminResponseDTO.valueOf(entity);
+    }
+
+
+    @Override
+    @Transactional
+    public CadastroAdminResponseDTO alterarPorAdmin(Long id, CadastroAdminDTO dto) {
+
+        Usuario entity = repository.findById(id);
+
+        if(entity != null){
+            PessoaFisica pessoa = entity.getPessoaFisica();
+
+            pessoa.setNome(dto.nome());
+            pessoa.setEmail(dto.email());
+            pessoa.setCpf(dto.cpf());
+            pessoa.setDataNascimento(dto.dataNascimento());
+
+            entity.setLogin(dto.email());
+
+            if(!dto.senha().equals(entity.getSenha())){
+                entity.setSenha(hashService.getHashSenha(dto.senha()));
+            }
+
+            if (dto.telefones() != null){
+                List<Telefone> telefonesModel = dto.telefones().stream().map(telefoneDTO -> {
+                    return telefoneService.toModel(telefoneDTO);
+                }).collect(Collectors.toList());
+
+                entity.setListaTelefone(telefonesModel);
+            }
+
+
+            entity.setPessoaFisica(pessoa);
+
+            List<Perfil> perfis = new ArrayList<>();
+
+            if (dto.perfis() != null) {
+                for (Integer idPerfil : dto.perfis() ){
+                    if (!Perfil.valueOf(idPerfil).equals(Perfil.COMUM)){
+                        perfis.add(Perfil.valueOf(idPerfil));
+                    }
+                }
+            }
+
+            perfis.add(Perfil.COMUM);
+            entity.setPerfis(perfis);
+
+            return CadastroAdminResponseDTO.valueOf(entity);
+        }
+
+        return CadastroAdminResponseDTO.valueOf(entity);
+    }
+
+    @Override
+    @Transactional
+    public CadastroAdminResponseDTO alterarSituacao(Long id, Boolean situacao) {
+        Usuario entity = repository.findById(id);
+        entity.setAtivo(situacao);
+
+        return CadastroAdminResponseDTO.valueOf(entity);
+    }
+
+    @Override
+    public List<CadastroAdminResponseDTO> findAllAdminPaginado(int pageNumber, int pageSize) {
+        List<Usuario> lista = this.repository.findAll()
+                .page(Page.of(pageNumber, pageSize))
+                .list().stream()
+                .sorted(Comparator.comparing(u -> u.getPessoaFisica().getNome()))
+                .collect(Collectors.toList());
+
+        return lista.stream().map(usuario -> CadastroAdminResponseDTO.valueOf(usuario)).collect(Collectors.toList());
+    }
+
+    @Override
+    public CadastroAdminResponseDTO findByIdPorAdmin(Long id) {
+        Usuario usuario = this.getUsuario(id);
+
+        return CadastroAdminResponseDTO.valueOf(usuario);
     }
 
 //    @Override

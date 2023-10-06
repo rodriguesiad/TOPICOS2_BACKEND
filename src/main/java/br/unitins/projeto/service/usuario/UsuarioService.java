@@ -5,6 +5,8 @@ import br.unitins.projeto.dto.endereco.EnderecoResponseDTO;
 import br.unitins.projeto.dto.endereco.EnderecoUpdateDTO;
 import br.unitins.projeto.dto.usuario.UsuarioDTO;
 import br.unitins.projeto.dto.usuario.UsuarioResponseDTO;
+import br.unitins.projeto.dto.usuario.cadastro.CadastroAdminDTO;
+import br.unitins.projeto.dto.usuario.cadastro.CadastroAdminResponseDTO;
 import br.unitins.projeto.dto.usuario.dados_pessoais.DadosPessoaisDTO;
 import br.unitins.projeto.dto.usuario.dados_pessoais.DadosPessoaisResponseDTO;
 import br.unitins.projeto.dto.usuario.enderecos.UsuarioEnderecoResponseDTO;
@@ -26,9 +28,11 @@ public interface UsuarioService {
 
     void delete(Long id);
 
-    List<UsuarioResponseDTO> findByNome(String nome);
+    List<CadastroAdminResponseDTO> findByCampoBusca(String campoBusca, Boolean ativo, int pageNumber, int pageSize);
 
     Long count();
+
+    Long countByCampoBusca(String campoBusca, Boolean ativo);
 
     Usuario findByLoginAndSenha(String login, String senha);
 
@@ -60,5 +64,15 @@ public interface UsuarioService {
 
 //    void deleteItemListaDesejo(Long id, Long idProduto);
 
+    CadastroAdminResponseDTO cadastrarPorAdmin(@Valid CadastroAdminDTO dto);
+
+    CadastroAdminResponseDTO alterarPorAdmin(Long id, @Valid CadastroAdminDTO dto);
+
+
+    CadastroAdminResponseDTO alterarSituacao(Long id, Boolean situacao);
+
+    List<CadastroAdminResponseDTO> findAllAdminPaginado(int pageNumber, int pageSize);
+
+    CadastroAdminResponseDTO findByIdPorAdmin(Long id);
 
 }

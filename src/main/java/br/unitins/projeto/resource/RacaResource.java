@@ -3,7 +3,6 @@ package br.unitins.projeto.resource;
 import br.unitins.projeto.application.Result;
 import br.unitins.projeto.dto.raca.RacaDTO;
 import br.unitins.projeto.dto.raca.RacaResponseDTO;
-import br.unitins.projeto.dto.situacao.AlterarSituacaoDTO;
 import br.unitins.projeto.service.raca.RacaService;
 import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolationException;
@@ -15,6 +14,7 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
@@ -36,6 +36,21 @@ public class RacaResource {
     public List<RacaResponseDTO> getAll() {
         LOG.info("Buscando todos os raças.");
         return service.getAll();
+    }
+
+    @GET
+    @Path("/paginado")
+    public List<RacaResponseDTO> getAllPaginado(
+            @QueryParam("page") int pageNumber,
+            @QueryParam("size") int pageSize
+    ) {
+        return service.findAllPaginado(pageNumber, pageSize);
+    }
+
+    @GET
+    @Path("/count")
+    public Long count() {
+        return service.count();
     }
 
     @GET
@@ -93,12 +108,12 @@ public class RacaResource {
     @PUT
     @Path("/situacao/{id}")
 //    @RolesAllowed({"Admin"})
-    public Response alterarSituacao(@PathParam("id") Long id, AlterarSituacaoDTO dto) {
+    public Response alterarSituacao(@PathParam("id") Long id, Boolean situacao) {
         LOG.infof("Alterando situação da raça");
         Result result = null;
 
         try {
-            RacaResponseDTO response = service.alterarSituacao(id, dto);
+            RacaResponseDTO response = service.alterarSituacao(id, situacao);
             LOG.infof("Raça (%d) alterado com sucesso.", response.id());
             return Response.ok(response).build();
         } catch (ConstraintViolationException e) {
@@ -137,13 +152,16 @@ public class RacaResource {
     }
 
     @GET
-    @Path("/search/{nome}")
-    public Response search(@PathParam("nome") String nome) {
+    @Path("/search")
+    public Response search(@QueryParam("page") int pageNumber,
+                           @QueryParam("size") int pageSize,
+                           @QueryParam("nome") String nome,
+                           @QueryParam("ativo") Boolean ativo) {
         LOG.infof("Pesquisando raças pelo nome: %s", nome);
         Result result = null;
 
         try {
-            List<RacaResponseDTO> response = service.findByNome(nome);
+            List<RacaResponseDTO> response = service.findByNome(nome, ativo, pageNumber, pageSize);
             LOG.infof("Pesquisa realizada com sucesso.");
             return Response.ok(response).build();
         } catch (ConstraintViolationException e) {
@@ -156,6 +174,13 @@ public class RacaResource {
         }
 
         return Response.status(Status.NOT_FOUND).entity(result).build();
+    }
+
+    @GET
+    @Path("/search/count")
+    public Long count(@QueryParam("nome") String nome,
+                      @QueryParam("ativo") Boolean ativo) {
+        return service.countByNome(nome, ativo);
     }
 
 }
