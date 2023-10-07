@@ -2,7 +2,6 @@ package br.unitins.projeto.service.especie;
 
 import br.unitins.projeto.dto.especie.EspecieDTO;
 import br.unitins.projeto.dto.especie.EspecieResponseDTO;
-import br.unitins.projeto.dto.situacao.AlterarSituacaoDTO;
 import br.unitins.projeto.model.Especie;
 import br.unitins.projeto.repository.EspecieRepository;
 import io.quarkus.panache.common.Page;
@@ -84,9 +83,9 @@ public class EspecieServiceImpl implements EspecieService {
 
     @Override
     @Transactional
-    public EspecieResponseDTO alterarSituacao(Long id, AlterarSituacaoDTO dto) {
+    public EspecieResponseDTO alterarSituacao(Long id, Boolean situacao) {
         Especie entity = repository.findById(id);
-        entity.setAtivo(dto.situacao());
+        entity.setAtivo(situacao);
 
         return new EspecieResponseDTO(entity);
     }

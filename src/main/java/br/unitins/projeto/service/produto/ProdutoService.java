@@ -4,7 +4,6 @@ import java.util.List;
 
 import br.unitins.projeto.dto.produto.ProdutoDTO;
 import br.unitins.projeto.dto.produto.ProdutoResponseDTO;
-import br.unitins.projeto.dto.situacao.AlterarSituacaoDTO;
 
 public interface ProdutoService {
     
@@ -20,7 +19,7 @@ public interface ProdutoService {
 
     List<ProdutoResponseDTO> findByNome(String nome, Boolean ativo, int pageNumber, int pageSize);
 
-    ProdutoResponseDTO alterarSituacao(Long id, AlterarSituacaoDTO dto);
+    ProdutoResponseDTO alterarSituacao(Long id, Boolean ativo);
 
     List<ProdutoResponseDTO> findAllPaginado(int pageNumber, int pageSize);
 

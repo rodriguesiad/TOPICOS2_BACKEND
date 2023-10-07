@@ -3,7 +3,6 @@ package br.unitins.projeto.resource;
 import br.unitins.projeto.application.Result;
 import br.unitins.projeto.dto.especie.EspecieDTO;
 import br.unitins.projeto.dto.especie.EspecieResponseDTO;
-import br.unitins.projeto.dto.situacao.AlterarSituacaoDTO;
 import br.unitins.projeto.service.especie.EspecieService;
 import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolationException;
@@ -109,7 +108,7 @@ public class EspecieResource {
     @PUT
     @Path("/situacao/{id}")
 //    @RolesAllowed({"Admin"})
-    public Response alterarSituacao(@PathParam("id") Long id, AlterarSituacaoDTO dto) {
+    public Response alterarSituacao(@PathParam("id") Long id, Boolean dto) {
         LOG.infof("Alterando situação da espécie");
         Result result = null;
 
@@ -158,7 +157,7 @@ public class EspecieResource {
                            @QueryParam("size") int pageSize,
                            @QueryParam("nome") String nome,
                            @QueryParam("ativo") Boolean ativo) {
-        LOG.infof("Pesquisando raças pelo nome: %s", nome);
+        LOG.infof("Pesquisando especies pelo nome: %s", nome);
         Result result = null;
 
         try {
@@ -166,7 +165,7 @@ public class EspecieResource {
             LOG.infof("Pesquisa realizada com sucesso.");
             return Response.ok(response).build();
         } catch (ConstraintViolationException e) {
-            LOG.error("Erro ao pesquisar raças.");
+            LOG.error("Erro ao pesquisar especies.");
             LOG.debug(e.getMessage());
             result = new Result(e.getConstraintViolations());
         } catch (Exception e) {
@@ -175,6 +174,13 @@ public class EspecieResource {
         }
 
         return Response.status(Status.NOT_FOUND).entity(result).build();
+    }
+
+    @GET
+    @Path("/search/count")
+    public Long count(@QueryParam("nome") String nome,
+                      @QueryParam("ativo") Boolean ativo) {
+        return service.countByNome(nome, ativo);
     }
 
 }
