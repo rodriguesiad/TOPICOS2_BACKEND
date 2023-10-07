@@ -1,8 +1,10 @@
 package br.unitins.projeto.resource;
 
 import br.unitins.projeto.application.Result;
+import br.unitins.projeto.dto.especie.EspecieResponseDTO;
 import br.unitins.projeto.dto.produto.ProdutoDTO;
 import br.unitins.projeto.dto.produto.ProdutoResponseDTO;
+import br.unitins.projeto.model.Produto;
 import br.unitins.projeto.service.produto.ProdutoService;
 import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolationException;
@@ -113,6 +115,29 @@ public class ProdutoResource {
         return Response.status(Status.NOT_FOUND).entity(result).build();
     }
 
+    @PUT
+    @Path("/situacao/{id}")
+//    @RolesAllowed({"Admin"})
+    public Response alterarSituacao(@PathParam("id") Long id, Boolean dto) {
+        LOG.infof("Alterando situação do produto");
+        Result result = null;
+
+        try {
+            ProdutoResponseDTO response = service.alterarSituacao(id, dto);
+            LOG.infof("Produto (%d) alterado com sucesso.", response.id());
+            return Response.ok(response).build();
+        } catch (ConstraintViolationException e) {
+            LOG.error("Erro ao alterar um produto.");
+            LOG.debug(e.getMessage());
+            result = new Result(e.getConstraintViolations());
+        } catch (Exception e) {
+            LOG.fatal("Erro sem identificacao: " + e.getMessage());
+            result = new Result(e.getMessage(), false);
+        }
+
+        return Response.status(Status.NOT_FOUND).entity(result).build();
+    }
+
     @GET
     @Path("/search")
     public Response search(@QueryParam("page") int pageNumber,
@@ -151,6 +176,13 @@ public class ProdutoResource {
             @QueryParam("size") int pageSize
     ) {
         return service.findAllPaginado(pageNumber, pageSize);
+    }
+
+    @GET
+    @Path("/search/count")
+    public Long count(@QueryParam("nome") String nome,
+                      @QueryParam("ativo") Boolean ativo) {
+        return service.countByNome(nome, ativo);
     }
 
 }

@@ -2,7 +2,6 @@ package br.unitins.projeto.service.especie;
 
 import br.unitins.projeto.dto.especie.EspecieDTO;
 import br.unitins.projeto.dto.especie.EspecieResponseDTO;
-import br.unitins.projeto.dto.situacao.AlterarSituacaoDTO;
 
 import java.util.List;
 
@@ -18,7 +17,7 @@ public interface EspecieService {
 
     void delete(Long id);
 
-    EspecieResponseDTO alterarSituacao(Long id, AlterarSituacaoDTO dto);
+    EspecieResponseDTO alterarSituacao(Long id, Boolean situacao);
 
     List<EspecieResponseDTO> findAllPaginado(int pageNumber, int pageSize);
 

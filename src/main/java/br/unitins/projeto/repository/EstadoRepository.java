@@ -5,6 +5,7 @@ import java.util.List;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import br.unitins.projeto.model.Estado;
+import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 
 @ApplicationScoped
@@ -14,6 +15,11 @@ public class EstadoRepository implements PanacheRepository<Estado> {
         if (sigla == null)
             return null;
         return find("UPPER(sigla) LIKE ?1 ", "%"+sigla.toUpperCase()+"%").list();
+    }
+
+    public PanacheQuery<Estado> findByNome(String sigla){
+
+        return find("UPPER(sigla) LIKE ?1 ", "%"+sigla.toUpperCase()+"%");
     }
 
 }

@@ -14,6 +14,7 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
@@ -113,13 +114,15 @@ public class EstadoResource {
     }
 
     @GET
-    @Path("/search/{sigla}")
-    public Response search(@PathParam("sigla") String sigla) {
-        LOG.infof("Pesquisando estados pelo nome: %s", sigla);
+    @Path("/search")
+    public Response search(@QueryParam("page") int pageNumber,
+                           @QueryParam("size") int pageSize,
+                           @QueryParam("nome") String nome) {
+        LOG.infof("Pesquisando estados pelo nome: %s", nome);
         Result result = null;
 
         try {
-            List<EstadoResponseDTO> response = service.findBySigla(sigla);
+            List<EstadoResponseDTO> response = service.findByNome(nome, pageNumber, pageSize);
             LOG.infof("Pesquisa realizada com sucesso.");
             return Response.ok(response).build();
         } catch (ConstraintViolationException e) {
@@ -134,5 +137,16 @@ public class EstadoResource {
         return Response.status(Status.NOT_FOUND).entity(result).build();
     }
 
+    @GET
+    @Path("/search/count")
+    public Long count(@QueryParam("nome") String nome) {
+        return service.countBySigla(nome);
+    }
+
+    @GET
+    @Path("/count")
+    public Long count() {
+        return service.count();
+    }
 }
 

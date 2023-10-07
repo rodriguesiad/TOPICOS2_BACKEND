@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 
 import br.unitins.projeto.dto.produto.ProdutoDTO;
 import br.unitins.projeto.dto.produto.ProdutoResponseDTO;
-import br.unitins.projeto.dto.situacao.AlterarSituacaoDTO;
 import br.unitins.projeto.model.PorteAnimal;
 import br.unitins.projeto.model.Produto;
 import br.unitins.projeto.repository.CategoriaRepository;
@@ -66,7 +65,7 @@ public class ProdutoServiceImpl implements ProdutoService {
         entity.setNome(produtoDto.nome());
         entity.setDescricao(produtoDto.descricao());
         entity.setEstoque(produtoDto.estoque());
-        entity.setAtivo(produtoDto.ativo());
+        entity.setAtivo(true);
         entity.setPeso(produtoDto.peso());
         entity.setPorteAnimal(PorteAnimal.valueOf(produtoDto.porte()));
         entity.setPreco(produtoDto.preco());
@@ -126,9 +125,9 @@ public class ProdutoServiceImpl implements ProdutoService {
 
     @Override
     @Transactional
-    public ProdutoResponseDTO alterarSituacao(Long id, AlterarSituacaoDTO dto) {
+    public ProdutoResponseDTO alterarSituacao(Long id, Boolean dto) {
         Produto entity = repository.findById(id);
-        entity.setAtivo(dto.situacao());
+        entity.setAtivo(dto);
 
         return new ProdutoResponseDTO(entity);
     }
@@ -151,5 +150,4 @@ public class ProdutoServiceImpl implements ProdutoService {
     public Long countByNome(String nome,Boolean ativo) {
         return repository.findByFiltro(nome, ativo).count();
     }
-
 }

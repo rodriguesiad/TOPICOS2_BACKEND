@@ -15,10 +15,15 @@ public interface EstadoService {
 
     EstadoResponseDTO update(Long id, EstadoDTO productDTO);
 
+    List<EstadoResponseDTO> findAllPaginado(int pageNumber, int pageSize);
+
     void delete(Long id);
 
-    List<EstadoResponseDTO> findBySigla(String sigla);
+    List<EstadoResponseDTO> findByNome(String nome, int pageNumber, int pageSize);
 
     Long count();
+
+    Long countBySigla(String sigla);
+
 
 }
