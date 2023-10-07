@@ -18,14 +18,14 @@ INSERT INTO usuario(login, senha, id_pessoa_fisica, ativo) VALUES ('joao', 'TRwn
 INSERT INTO perfis (id_usuario, perfil) VALUES (2, 'Funcionario');
 INSERT INTO perfis (id_usuario, perfil) VALUES (2, 'Comum');
 
-insert into metododerecebimento(id) values (1);
-insert into metododerecebimento(id) values (2);
-insert into metododerecebimento(id) values (3);
-insert into metododerecebimento(id) values (4);
-insert into metododerecebimento(id) values (5);
-insert into metododerecebimento(id) values (6);
-insert into metododerecebimento(id) values (7);
-insert into metododerecebimento(id) values (8);
+insert into metododerecebimento(id) values (default);
+insert into metododerecebimento(id) values (default);
+insert into metododerecebimento(id) values (default);
+insert into metododerecebimento(id) values (default);
+insert into metododerecebimento(id) values (default);
+insert into metododerecebimento(id) values (default);
+insert into metododerecebimento(id) values (default);
+insert into metododerecebimento(id) values (default);
 
 insert into pixrecebimento(id, chave, tipo_chave, ativo) values (1, '63984883349', 4, true);
 insert into pixrecebimento(id, chave, tipo_chave, ativo) values (2, 'petisco@gmail.com', 3, false);
