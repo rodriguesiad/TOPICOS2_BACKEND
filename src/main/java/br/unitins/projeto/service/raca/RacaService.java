@@ -18,7 +18,7 @@ public interface RacaService {
 
     void delete(Long id);
 
-    List<RacaResponseDTO> findByNome(String nome,Boolean ativo, int pageNumber, int pageSize);
+    List<RacaResponseDTO> findByNome(String nome, String situacao, int pageNumber, int pageSize);
 
     RacaResponseDTO alterarSituacao(Long id, Boolean situacao);
 
@@ -26,6 +26,6 @@ public interface RacaService {
 
     List<RacaResponseDTO> findAllPaginado(int pageNumber, int pageSize);
 
-    Long countByNome(String nome,Boolean ativo);
+    Long countByNome(String nome, String situacao);
 
 }

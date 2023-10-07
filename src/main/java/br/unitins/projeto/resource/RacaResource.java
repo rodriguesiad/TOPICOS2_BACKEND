@@ -156,12 +156,12 @@ public class RacaResource {
     public Response search(@QueryParam("page") int pageNumber,
                            @QueryParam("size") int pageSize,
                            @QueryParam("nome") String nome,
-                           @QueryParam("ativo") Boolean ativo) {
+                           @QueryParam("ativo") String situacao) {
         LOG.infof("Pesquisando raças pelo nome: %s", nome);
         Result result = null;
 
         try {
-            List<RacaResponseDTO> response = service.findByNome(nome, ativo, pageNumber, pageSize);
+            List<RacaResponseDTO> response = service.findByNome(nome, situacao, pageNumber, pageSize);
             LOG.infof("Pesquisa realizada com sucesso.");
             return Response.ok(response).build();
         } catch (ConstraintViolationException e) {
@@ -179,8 +179,8 @@ public class RacaResource {
     @GET
     @Path("/search/count")
     public Long count(@QueryParam("nome") String nome,
-                      @QueryParam("ativo") Boolean ativo) {
-        return service.countByNome(nome, ativo);
+                      @QueryParam("situacao") String situacao) {
+        return service.countByNome(nome, situacao);
     }
 
 }

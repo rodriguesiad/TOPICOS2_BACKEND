@@ -81,7 +81,15 @@ public class CategoriaServiceImpl implements CategoriaService {
     }
 
     @Override
-    public List<CategoriaResponseDTO> findByCampoBusca(String nome, Boolean ativo, int pageNumber, int pageSize) {
+    public List<CategoriaResponseDTO> findByCampoBusca(String nome, String situacao, int pageNumber, int pageSize) {
+        Boolean ativo = null;
+
+        if (situacao.equals("Inativo")){
+            ativo = false;
+        } else if (situacao.equals("Ativo")) {
+            ativo = true;
+        }
+
         List<Categoria> list = this.repository.findByFiltro(nome, ativo)
                 .page(Page.of(pageNumber, pageSize))
                 .list().stream()
@@ -92,7 +100,15 @@ public class CategoriaServiceImpl implements CategoriaService {
     }
 
     @Override
-    public Long countByCampoBusca(String nome, Boolean ativo) {
+    public Long countByCampoBusca(String nome, String situacao) {
+        Boolean ativo = null;
+
+        if (situacao.equals("Inativo")){
+            ativo = false;
+        } else if (situacao.equals("Ativo")) {
+            ativo = true;
+        }
+
         return repository.findByFiltro(nome, ativo).count();
     }
 

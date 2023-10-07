@@ -83,7 +83,15 @@ public class RacaServiceImpl implements RacaService {
     }
 
     @Override
-    public List<RacaResponseDTO> findByNome(String nome,Boolean ativo, int pageNumber, int pageSize) {
+    public List<RacaResponseDTO> findByNome(String nome, String situacao, int pageNumber, int pageSize) {
+        Boolean ativo = null;
+
+        if (situacao.equals("Inativo")){
+            ativo = false;
+        } else if (situacao.equals("Ativo")) {
+            ativo = true;
+        }
+
         List<Raca> list = this.repository.findByFiltro(nome, ativo)
                 .page(Page.of(pageNumber, pageSize))
                 .list().stream()
@@ -106,7 +114,15 @@ public class RacaServiceImpl implements RacaService {
     }
 
     @Override
-    public Long countByNome(String nome,Boolean ativo) {
+    public Long countByNome(String nome, String situacao) {
+        Boolean ativo = null;
+
+        if (situacao.equals("Inativo")){
+            ativo = false;
+        } else if (situacao.equals("Ativo")) {
+            ativo = true;
+        }
+
         return repository.findByFiltro(nome, ativo).count();
     }
 

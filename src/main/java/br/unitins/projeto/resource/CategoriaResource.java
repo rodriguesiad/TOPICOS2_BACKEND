@@ -156,12 +156,12 @@ public class CategoriaResource {
     public Response search(@QueryParam("page") int pageNumber,
                            @QueryParam("size") int pageSize,
                            @QueryParam("nome") String nome,
-                           @QueryParam("ativo") Boolean ativo) {
+                           @QueryParam("situacao") String situacao) {
         LOG.infof("Pesquisando categorias por filtro");
         Result result = null;
 
         try {
-            List<CategoriaResponseDTO> response = service.findByCampoBusca(nome, ativo, pageNumber, pageSize);
+            List<CategoriaResponseDTO> response = service.findByCampoBusca(nome, situacao, pageNumber, pageSize);
             LOG.infof("Pesquisa realizada com sucesso.");
             return Response.ok(response).build();
         } catch (ConstraintViolationException e) {
@@ -179,8 +179,8 @@ public class CategoriaResource {
     @GET
     @Path("/search/count")
     public Long count(@QueryParam("nome") String nome,
-                      @QueryParam("ativo") Boolean ativo) {
-        return service.countByCampoBusca(nome, ativo);
+                      @QueryParam("situacao") String situacao) {
+        return service.countByCampoBusca(nome, situacao);
     }
 
 }
