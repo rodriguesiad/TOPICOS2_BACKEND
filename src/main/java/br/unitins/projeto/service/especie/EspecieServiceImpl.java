@@ -105,12 +105,28 @@ public class EspecieServiceImpl implements EspecieService {
     }
 
     @Override
-    public Long countByNome(String nome,Boolean ativo) {
+    public Long countByNome(String nome, String situacao) {
+        Boolean ativo = null;
+
+        if (situacao.equals("Inativo")){
+            ativo = false;
+        } else if (situacao.equals("Ativo")) {
+            ativo = true;
+        }
+
         return repository.findByFiltro(nome, ativo).count();
     }
 
-        @Override
-    public List<EspecieResponseDTO> findByNome(String nome,Boolean ativo, int pageNumber, int pageSize) {
+    @Override
+    public List<EspecieResponseDTO> findByNome(String nome, String situacao, int pageNumber, int pageSize) {
+        Boolean ativo = null;
+
+        if (situacao.equals("Inativo")){
+            ativo = false;
+        } else if (situacao.equals("Ativo")) {
+            ativo = true;
+        }
+
         List<Especie> list = this.repository.findByFiltro(nome, ativo)
                 .page(Page.of(pageNumber, pageSize))
                 .list().stream()
