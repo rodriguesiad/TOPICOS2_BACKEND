@@ -19,11 +19,11 @@ public interface EstadoService {
 
     void delete(Long id);
 
-    List<EstadoResponseDTO> findByNome(String nome, int pageNumber, int pageSize);
+    List<EstadoResponseDTO> findByFiltro(String nome, String situacao, int pageNumber, int pageSize);
 
     Long count();
 
-    Long countBySigla(String sigla);
+    Long countByFiltro(String nome, String situacao);
 
 
 }

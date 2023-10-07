@@ -2,6 +2,7 @@ package br.unitins.projeto.repository;
 
 import java.util.List;
 
+import br.unitins.projeto.model.Raca;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import br.unitins.projeto.model.Estado;
@@ -17,9 +18,20 @@ public class EstadoRepository implements PanacheRepository<Estado> {
         return find("UPPER(sigla) LIKE ?1 ", "%"+sigla.toUpperCase()+"%").list();
     }
 
-    public PanacheQuery<Estado> findByNome(String sigla){
+    public PanacheQuery<Estado> findByFiltro(String nome, Boolean ativo) {
+        if (nome != null && ativo != null) {
+            return find("UPPER(nome) LIKE ?1 AND ativo = ?2 ", "%" + nome.toUpperCase() + "%", ativo);
+        }
 
-        return find("UPPER(sigla) LIKE ?1 ", "%"+sigla.toUpperCase()+"%");
+        if (nome != null && ativo == null) {
+            return find("UPPER(nome) LIKE ?1 ", "%" + nome.toUpperCase() + "%");
+        }
+
+        if (nome == null && ativo != null) {
+            return find("ativo = ?1 ", "%" + nome.toUpperCase() + "%", ativo);
+        }
+
+        return null;
     }
 
 }

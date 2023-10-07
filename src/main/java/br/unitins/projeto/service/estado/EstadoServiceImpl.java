@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import br.unitins.projeto.model.Raca;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -82,11 +83,19 @@ public class EstadoServiceImpl implements EstadoService {
     }
 
     @Override
-    public List<EstadoResponseDTO> findByNome(String sigla, int pageNumber, int pageSize) {
-        List<Estado> list = this.repository.findByNome(sigla)
+    public List<EstadoResponseDTO> findByFiltro(String nome, String situacao, int pageNumber, int pageSize) {
+        Boolean ativo = null;
+
+        if (situacao.equals("Inativo")){
+            ativo = false;
+        } else if (situacao.equals("Ativo")) {
+            ativo = true;
+        }
+
+        List<Estado> list = this.repository.findByFiltro(nome, ativo)
                 .page(Page.of(pageNumber, pageSize))
                 .list().stream()
-                .sorted(Comparator.comparing(Estado::getSigla))
+                .sorted(Comparator.comparing(Estado::getNome))
                 .collect(Collectors.toList());
 
         return list.stream().map(EstadoResponseDTO::new).collect(Collectors.toList());
@@ -107,8 +116,15 @@ public class EstadoServiceImpl implements EstadoService {
     }
 
     @Override
-    public Long countBySigla(String sigla) {
-      
-        return this.repository.findByNome(sigla).count();
+    public Long countByFiltro(String nome, String situacao) {
+        Boolean ativo = null;
+
+        if (situacao.equals("Inativo")){
+            ativo = false;
+        } else if (situacao.equals("Ativo")) {
+            ativo = true;
+        }
+
+        return this.repository.findByFiltro(nome, ativo).count();
     }
 }

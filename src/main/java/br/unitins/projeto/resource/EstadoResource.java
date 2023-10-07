@@ -117,12 +117,13 @@ public class EstadoResource {
     @Path("/search")
     public Response search(@QueryParam("page") int pageNumber,
                            @QueryParam("size") int pageSize,
-                           @QueryParam("nome") String nome) {
+                           @QueryParam("nome") String nome,
+                           @QueryParam("situacao") String situacao) {
         LOG.infof("Pesquisando estados pelo nome: %s", nome);
         Result result = null;
 
         try {
-            List<EstadoResponseDTO> response = service.findByNome(nome, pageNumber, pageSize);
+            List<EstadoResponseDTO> response = service.findByFiltro(nome, situacao, pageNumber, pageSize);
             LOG.infof("Pesquisa realizada com sucesso.");
             return Response.ok(response).build();
         } catch (ConstraintViolationException e) {
@@ -139,8 +140,9 @@ public class EstadoResource {
 
     @GET
     @Path("/search/count")
-    public Long count(@QueryParam("nome") String nome) {
-        return service.countBySigla(nome);
+    public Long count(@QueryParam("nome") String nome,
+                      @QueryParam("situacao") String situacao) {
+        return service.countByFiltro(nome, situacao);
     }
 
     @GET

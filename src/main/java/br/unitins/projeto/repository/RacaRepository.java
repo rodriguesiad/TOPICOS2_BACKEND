@@ -26,4 +26,5 @@ public class RacaRepository implements PanacheRepository<Raca> {
 
         return null;
     }
+
 }

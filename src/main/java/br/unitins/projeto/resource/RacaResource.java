@@ -156,7 +156,7 @@ public class RacaResource {
     public Response search(@QueryParam("page") int pageNumber,
                            @QueryParam("size") int pageSize,
                            @QueryParam("nome") String nome,
-                           @QueryParam("ativo") String situacao) {
+                           @QueryParam("situacao") String situacao) {
         LOG.infof("Pesquisando raças pelo nome: %s", nome);
         Result result = null;
 
