@@ -142,5 +142,11 @@ public class EstadoResource {
     public Long count(@QueryParam("nome") String nome) {
         return service.countBySigla(nome);
     }
+
+    @GET
+    @Path("/count")
+    public Long count() {
+        return service.count();
+    }
 }
 
