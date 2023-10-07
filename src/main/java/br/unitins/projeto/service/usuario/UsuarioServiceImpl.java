@@ -127,7 +127,15 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public List<CadastroAdminResponseDTO> findByCampoBusca(String campoBusca, Boolean ativo, int pageNumber, int pageSize) {
+    public List<CadastroAdminResponseDTO> findByCampoBusca(String campoBusca, String situacao, int pageNumber, int pageSize) {
+        Boolean ativo = null;
+
+        if (situacao.equals("Inativo")){
+            ativo = false;
+        } else if (situacao.equals("Ativo")) {
+            ativo = true;
+        }
+
         List<Usuario> list = repository.findByCampoBusca(campoBusca, ativo)
                 .page(Page.of(pageNumber, pageSize))
                 .list().stream()
@@ -139,7 +147,15 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public Long countByCampoBusca(String campoBusca, Boolean ativo) {
+    public Long countByCampoBusca(String campoBusca, String situacao) {
+        Boolean ativo = null;
+
+        if (situacao.equals("Inativo")){
+            ativo = false;
+        } else if (situacao.equals("Ativo")) {
+            ativo = true;
+        }
+
         return repository.findByCampoBusca(campoBusca, ativo).count();
     }
 

@@ -100,12 +100,12 @@ public class UsuarioResource {
     public Response search(@QueryParam("page") int pageNumber,
                            @QueryParam("size") int pageSize,
                            @QueryParam("campoBusca") String campoBusca,
-                           @QueryParam("ativo") Boolean ativo) {
+                           @QueryParam("situacao") String situacao) {
         LOG.infof("Pesquisando usuarios pelo campoBusca: %s", campoBusca);
         Result result = null;
 
         try {
-            List<CadastroAdminResponseDTO> response = service.findByCampoBusca(campoBusca, ativo, pageNumber, pageSize);
+            List<CadastroAdminResponseDTO> response = service.findByCampoBusca(campoBusca, situacao, pageNumber, pageSize);
             LOG.infof("Pesquisa realizada com sucesso.");
             return Response.ok(response).build();
         } catch (ConstraintViolationException e) {
@@ -123,9 +123,9 @@ public class UsuarioResource {
     @GET
     @Path("/search/count")
     public Long count(@QueryParam("campoBusca") String campoBusca,
-                      @QueryParam("ativo") Boolean ativo
+                      @QueryParam("situacao") String situacao
     ) {
-        return service.countByCampoBusca(campoBusca, ativo);
+        return service.countByCampoBusca(campoBusca, situacao);
     }
 
     @PUT

@@ -28,11 +28,11 @@ public interface UsuarioService {
 
     void delete(Long id);
 
-    List<CadastroAdminResponseDTO> findByCampoBusca(String campoBusca, Boolean ativo, int pageNumber, int pageSize);
+    List<CadastroAdminResponseDTO> findByCampoBusca(String campoBusca, String situacao, int pageNumber, int pageSize);
 
     Long count();
 
-    Long countByCampoBusca(String campoBusca, Boolean ativo);
+    Long countByCampoBusca(String campoBusca, String situacao);
 
     Usuario findByLoginAndSenha(String login, String senha);
 
