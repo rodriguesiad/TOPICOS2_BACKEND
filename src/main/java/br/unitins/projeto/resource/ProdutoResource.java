@@ -143,12 +143,12 @@ public class ProdutoResource {
     public Response search(@QueryParam("page") int pageNumber,
                            @QueryParam("size") int pageSize,
                            @QueryParam("nome") String nome,
-                           @QueryParam("situacao") String situacao) {
+                           @QueryParam("ativo") Boolean ativo) {
         LOG.infof("Pesquisando produtos pelo nome: %s", nome);
         Result result = null;
 
         try {
-            List<ProdutoResponseDTO> response = service.findByNome(nome, situacao, pageNumber, pageSize);
+            List<ProdutoResponseDTO> response = service.findByNome(nome, ativo, pageNumber, pageSize);
             LOG.infof("Pesquisa realizada com sucesso.");
             return Response.ok(response).build();
         } catch (ConstraintViolationException e) {
@@ -181,8 +181,8 @@ public class ProdutoResource {
     @GET
     @Path("/search/count")
     public Long count(@QueryParam("nome") String nome,
-                      @QueryParam("situacao") String situacao) {
-        return service.countByNome(nome, situacao);
+                      @QueryParam("ativo") Boolean ativo) {
+        return service.countByNome(nome, ativo);
     }
 
 }

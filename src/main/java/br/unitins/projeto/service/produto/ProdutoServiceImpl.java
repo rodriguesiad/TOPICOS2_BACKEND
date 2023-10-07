@@ -113,15 +113,7 @@ public class ProdutoServiceImpl implements ProdutoService {
     }
 
     @Override
-    public List<ProdutoResponseDTO> findByNome(String nome, String situacao, int pageNumber, int pageSize) {
-        Boolean ativo = null;
-
-        if (situacao.equals("Inativo")){
-            ativo = false;
-        } else if (situacao.equals("Ativo")) {
-            ativo = true;
-        }
-
+    public List<ProdutoResponseDTO> findByNome(String nome, Boolean ativo, int pageNumber, int pageSize) {
         List<Produto> list = this.repository.findByFiltro(nome, ativo)
                 .page(Page.of(pageNumber, pageSize))
                 .list().stream()
@@ -155,15 +147,7 @@ public class ProdutoServiceImpl implements ProdutoService {
     }
 
     @Override
-    public Long countByNome(String nome, String situacao) {
-        Boolean ativo = null;
-
-        if (situacao.equals("Inativo")){
-            ativo = false;
-        } else if (situacao.equals("Ativo")) {
-            ativo = true;
-        }
-
+    public Long countByNome(String nome, Boolean ativo) {
         return repository.findByFiltro(nome, ativo).count();
     }
 }

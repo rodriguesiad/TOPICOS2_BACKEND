@@ -21,9 +21,9 @@ public interface EspecieService {
 
     List<EspecieResponseDTO> findAllPaginado(int pageNumber, int pageSize);
 
-    Long countByNome(String nome, String situacao);
+    Long countByNome(String nome, Boolean ativo);
 
-    List<EspecieResponseDTO> findByNome(String nome, String situacao, int pageNumber, int pageSize);
+    List<EspecieResponseDTO> findByNome(String nome, Boolean ativo, int pageNumber, int pageSize);
 
     Long count();
 
