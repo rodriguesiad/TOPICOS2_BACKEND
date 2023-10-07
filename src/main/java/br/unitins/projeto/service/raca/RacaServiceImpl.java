@@ -52,6 +52,7 @@ public class RacaServiceImpl implements RacaService {
         entity.setNome(racaDto.nome());
         entity.setAtivo(true);
         repository.persist(entity);
+        
 
         return new RacaResponseDTO(entity);
     }
@@ -63,6 +64,7 @@ public class RacaServiceImpl implements RacaService {
 
         Raca entity = repository.findById(id);
         entity.setNome(racaDto.nome());
+        entity.setAtivo(true);
 
         return new RacaResponseDTO(entity);
     }

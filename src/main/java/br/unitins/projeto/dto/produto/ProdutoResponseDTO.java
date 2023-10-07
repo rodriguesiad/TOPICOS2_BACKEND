@@ -1,13 +1,34 @@
 package br.unitins.projeto.dto.produto;
 
+import br.unitins.projeto.dto.categoria.CategoriaResponseDTO;
+import br.unitins.projeto.dto.especie.EspecieResponseDTO;
+import br.unitins.projeto.dto.raca.RacaResponseDTO;
+import br.unitins.projeto.model.PorteAnimal;
 import br.unitins.projeto.model.Produto;
 
 public record ProdutoResponseDTO(
+        Long id,
         String nome,
-        Double preco
-) {
+        String descricao,
+        Double preco,
+        Double peso,
+        Integer estoque,
+        PorteAnimal porte,
+        RacaResponseDTO raca,
+        EspecieResponseDTO especie,
+        CategoriaResponseDTO categoria
 
+) {
     public ProdutoResponseDTO(Produto entity) {
-        this(entity.getNome(), entity.getPreco());
+        this(entity.getId(),
+        entity.getNome(), 
+        entity.getDescricao(),
+        entity.getPreco(),
+        entity.getPeso(),
+        entity.getEstoque(),
+        entity.getPorteAnimal(),
+        new RacaResponseDTO(entity.getRaca()),
+        new EspecieResponseDTO(entity.getEspecie()),
+        new CategoriaResponseDTO(entity.getCategoria()));
     }
 }

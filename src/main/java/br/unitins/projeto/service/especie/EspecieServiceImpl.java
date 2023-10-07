@@ -5,6 +5,7 @@ import br.unitins.projeto.dto.especie.EspecieResponseDTO;
 import br.unitins.projeto.dto.situacao.AlterarSituacaoDTO;
 import br.unitins.projeto.model.Especie;
 import br.unitins.projeto.repository.EspecieRepository;
+import io.quarkus.panache.common.Page;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -13,6 +14,7 @@ import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
 import jakarta.ws.rs.NotFoundException;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -62,6 +64,7 @@ public class EspecieServiceImpl implements EspecieService {
 
         Especie entity = repository.findById(id);
         entity.setNome(especieDto.nome());
+        entity.setAtivo(true);
 
         return new EspecieResponseDTO(entity);
     }
@@ -80,12 +83,6 @@ public class EspecieServiceImpl implements EspecieService {
     }
 
     @Override
-    public List<EspecieResponseDTO> findByNome(String nome) {
-        List<Especie> list = repository.findByNome(nome);
-        return list.stream().map(EspecieResponseDTO::new).collect(Collectors.toList());
-    }
-
-    @Override
     @Transactional
     public EspecieResponseDTO alterarSituacao(Long id, AlterarSituacaoDTO dto) {
         Especie entity = repository.findById(id);
@@ -99,4 +96,28 @@ public class EspecieServiceImpl implements EspecieService {
         return repository.count();
     }
 
+    @Override
+    public List<EspecieResponseDTO> findAllPaginado(int pageNumber, int pageSize) {
+        List<Especie> lista = this.repository.findAll()
+                .page(Page.of(pageNumber, pageSize))
+                .list();
+
+        return lista.stream().map(EspecieResponseDTO::new).collect(Collectors.toList());
+    }
+
+    @Override
+    public Long countByNome(String nome,Boolean ativo) {
+        return repository.findByFiltro(nome, ativo).count();
+    }
+
+        @Override
+    public List<EspecieResponseDTO> findByNome(String nome,Boolean ativo, int pageNumber, int pageSize) {
+        List<Especie> list = this.repository.findByFiltro(nome, ativo)
+                .page(Page.of(pageNumber, pageSize))
+                .list().stream()
+                .sorted(Comparator.comparing(Especie::getNome))
+                .collect(Collectors.toList());
+
+        return list.stream().map(EspecieResponseDTO::new).collect(Collectors.toList());
+    }
 }
