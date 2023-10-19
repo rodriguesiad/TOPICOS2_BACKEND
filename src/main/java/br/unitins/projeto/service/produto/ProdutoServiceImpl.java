@@ -19,6 +19,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Valid;
 import jakarta.validation.Validator;
 import jakarta.ws.rs.NotFoundException;
 
@@ -58,8 +59,7 @@ public class ProdutoServiceImpl implements ProdutoService {
 
     @Override
     @Transactional
-    public ProdutoResponseDTO create(ProdutoDTO produtoDto) throws ConstraintViolationException {
-        validar(produtoDto);
+    public ProdutoResponseDTO create(@Valid ProdutoDTO produtoDto) throws ConstraintViolationException {
 
         Produto entity = new Produto();
         entity.setNome(produtoDto.nome());
@@ -79,8 +79,7 @@ public class ProdutoServiceImpl implements ProdutoService {
 
     @Override
     @Transactional
-    public ProdutoResponseDTO update(Long id, ProdutoDTO produtoDto) throws ConstraintViolationException {
-        validar(produtoDto);
+    public ProdutoResponseDTO update(Long id, @Valid ProdutoDTO produtoDto) throws ConstraintViolationException {
 
         Produto entity = repository.findById(id);
         entity.setNome(produtoDto.nome());
@@ -97,13 +96,6 @@ public class ProdutoServiceImpl implements ProdutoService {
         repository.persist(entity);
 
         return new ProdutoResponseDTO(entity);
-    }
-
-    private void validar(ProdutoDTO produtoDto) throws ConstraintViolationException {
-        Set<ConstraintViolation<ProdutoDTO>> violations = validator.validate(produtoDto);
-
-        if (!violations.isEmpty())
-            throw new ConstraintViolationException(violations);
     }
 
     @Override

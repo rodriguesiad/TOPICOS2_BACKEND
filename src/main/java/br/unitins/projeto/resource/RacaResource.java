@@ -63,46 +63,24 @@ public class RacaResource {
     @POST
 //    @RolesAllowed({"Admin"})
     public Response insert(RacaDTO dto) {
-        LOG.infof("Inserindo um raças: %s", dto.nome());
-        Result result = null;
+        LOG.infof("Inserindo uma raça: %s", dto.nome());
 
-        try {
-            RacaResponseDTO response = service.create(dto);
-            LOG.infof("Raça (%d) criado com sucesso.", response.id());
-            return Response.status(Status.CREATED).entity(response).build();
-        } catch (ConstraintViolationException e) {
-            LOG.error("Erro ao incluir um raças.");
-            LOG.debug(e.getMessage());
-            result = new Result(e.getConstraintViolations());
-        } catch (Exception e) {
-            LOG.fatal("Erro sem identificacao: " + e.getMessage());
-            result = new Result(e.getMessage(), false);
-        }
+        RacaResponseDTO response = service.create(dto);
+        LOG.infof("Raça (%d) criado com sucesso.", response.id());
+        return Response.status(Status.CREATED).entity(response).build();
 
-        return Response.status(Status.NOT_FOUND).entity(result).build();
     }
 
     @PUT
     @Path("/{id}")
 //    @RolesAllowed({"Admin"})
     public Response update(@PathParam("id") Long id, RacaDTO dto) {
-        LOG.infof("Alterando um raças: %s", dto.nome());
-        Result result = null;
+        LOG.infof("Alterando uma raça: %s", dto.nome());
 
-        try {
-            RacaResponseDTO response = service.update(id, dto);
-            LOG.infof("Raça (%d) alterado com sucesso.", response.id());
-            return Response.ok(response).build();
-        } catch (ConstraintViolationException e) {
-            LOG.error("Erro ao alterar um raça.");
-            LOG.debug(e.getMessage());
-            result = new Result(e.getConstraintViolations());
-        } catch (Exception e) {
-            LOG.fatal("Erro sem identificacao: " + e.getMessage());
-            result = new Result(e.getMessage(), false);
-        }
+        RacaResponseDTO response = service.update(id, dto);
+        LOG.infof("Raça (%d) alterado com sucesso.", response.id());
+        return Response.ok(response).build();
 
-        return Response.status(Status.NOT_FOUND).entity(result).build();
     }
 
     @PUT

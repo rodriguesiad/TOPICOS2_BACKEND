@@ -2,6 +2,7 @@ package br.unitins.projeto.service.raca;
 
 import br.unitins.projeto.dto.raca.RacaDTO;
 import br.unitins.projeto.dto.raca.RacaResponseDTO;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -11,9 +12,9 @@ public interface RacaService {
 
     RacaResponseDTO findById(Long id);
 
-    RacaResponseDTO create(RacaDTO productDTO);
+    RacaResponseDTO create(@Valid RacaDTO productDTO);
 
-    RacaResponseDTO update(Long id, RacaDTO productDTO);
+    RacaResponseDTO update(Long id, @Valid RacaDTO productDTO);
 
     void delete(Long id);
 

@@ -9,6 +9,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Valid;
 import jakarta.validation.Validator;
 import jakarta.ws.rs.NotFoundException;
 
@@ -48,7 +49,7 @@ public class MunicipioServiceImpl implements MunicipioService {
 
     @Override
     @Transactional
-    public MunicipioResponseDTO create(MunicipioDTO municipioDTO) throws ConstraintViolationException {
+    public MunicipioResponseDTO create(@Valid MunicipioDTO municipioDTO) throws ConstraintViolationException {
         validar(municipioDTO);
 
         Municipio entity = new Municipio();
@@ -61,7 +62,7 @@ public class MunicipioServiceImpl implements MunicipioService {
 
     @Override
     @Transactional
-    public MunicipioResponseDTO update(Long id, MunicipioDTO municipioDTO) throws ConstraintViolationException {
+    public MunicipioResponseDTO update(Long id, @Valid MunicipioDTO municipioDTO) throws ConstraintViolationException {
         validar(municipioDTO);
 
         Municipio entity = repository.findById(id);

@@ -4,6 +4,7 @@ import java.util.List;
 
 import br.unitins.projeto.dto.municipio.MunicipioDTO;
 import br.unitins.projeto.dto.municipio.MunicipioResponseDTO;
+import jakarta.validation.Valid;
 
 public interface MunicipioService {
 
@@ -11,9 +12,9 @@ public interface MunicipioService {
 
     MunicipioResponseDTO findById(Long id);
 
-    MunicipioResponseDTO create(MunicipioDTO productDTO);
+    MunicipioResponseDTO create(@Valid MunicipioDTO productDTO);
 
-    MunicipioResponseDTO update(Long id, MunicipioDTO productDTO);
+    MunicipioResponseDTO update(Long id, @Valid MunicipioDTO productDTO);
 
     void delete(Long id);
 

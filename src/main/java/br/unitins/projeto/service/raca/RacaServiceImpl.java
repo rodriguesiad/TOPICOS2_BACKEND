@@ -10,6 +10,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Valid;
 import jakarta.validation.Validator;
 import jakarta.ws.rs.NotFoundException;
 
@@ -45,8 +46,7 @@ public class RacaServiceImpl implements RacaService {
 
     @Override
     @Transactional
-    public RacaResponseDTO create(RacaDTO racaDto) throws ConstraintViolationException {
-        validar(racaDto);
+    public RacaResponseDTO create(@Valid RacaDTO racaDto) throws ConstraintViolationException {
 
         Raca entity = new Raca();
         entity.setNome(racaDto.nome());
@@ -59,21 +59,13 @@ public class RacaServiceImpl implements RacaService {
 
     @Override
     @Transactional
-    public RacaResponseDTO update(Long id, RacaDTO racaDto) throws ConstraintViolationException {
-        validar(racaDto);
+    public RacaResponseDTO update(Long id, @Valid RacaDTO racaDto) throws ConstraintViolationException {
 
         Raca entity = repository.findById(id);
         entity.setNome(racaDto.nome());
         entity.setAtivo(true);
 
         return new RacaResponseDTO(entity);
-    }
-
-    private void validar(RacaDTO racaDto) throws ConstraintViolationException {
-        Set<ConstraintViolation<RacaDTO>> violations = validator.validate(racaDto);
-
-        if (!violations.isEmpty())
-            throw new ConstraintViolationException(violations);
     }
 
     @Override

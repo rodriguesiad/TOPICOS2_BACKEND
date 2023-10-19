@@ -4,6 +4,7 @@ import java.util.List;
 
 import br.unitins.projeto.dto.produto.ProdutoDTO;
 import br.unitins.projeto.dto.produto.ProdutoResponseDTO;
+import jakarta.validation.Valid;
 
 public interface ProdutoService {
     
@@ -11,9 +12,9 @@ public interface ProdutoService {
 
     ProdutoResponseDTO findById(Long id);
 
-    ProdutoResponseDTO create(ProdutoDTO productDTO);
+    ProdutoResponseDTO create(@Valid ProdutoDTO productDTO);
 
-    ProdutoResponseDTO update(Long id, ProdutoDTO productDTO);
+    ProdutoResponseDTO update(Long id, @Valid ProdutoDTO productDTO);
 
     void delete(Long id);
 

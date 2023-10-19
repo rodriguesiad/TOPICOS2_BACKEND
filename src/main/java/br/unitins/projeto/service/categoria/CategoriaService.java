@@ -2,6 +2,7 @@ package br.unitins.projeto.service.categoria;
 
 import br.unitins.projeto.dto.categoria.CategoriaDTO;
 import br.unitins.projeto.dto.categoria.CategoriaResponseDTO;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -11,9 +12,9 @@ public interface CategoriaService {
 
     CategoriaResponseDTO findById(Long id);
 
-    CategoriaResponseDTO create(CategoriaDTO productDTO);
+    CategoriaResponseDTO create(@Valid CategoriaDTO productDTO);
 
-    CategoriaResponseDTO update(Long id, CategoriaDTO productDTO);
+    CategoriaResponseDTO update(Long id, @Valid CategoriaDTO productDTO);
 
     void delete(Long id);
 

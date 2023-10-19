@@ -25,6 +25,7 @@ import br.unitins.projeto.repository.UsuarioRepository;
 import br.unitins.projeto.service.endereco.EnderecoService;
 import br.unitins.projeto.service.hash.HashService;
 import br.unitins.projeto.service.telefone.TelefoneService;
+import br.unitins.projeto.validation.ValidationException;
 import io.quarkus.panache.common.Page;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -78,8 +79,6 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Override
     @Transactional
     public UsuarioResponseDTO create(@Valid UsuarioDTO usuarioDTO) throws ConstraintViolationException {
-
-        validar(usuarioDTO);
 
         Usuario entity = new Usuario();
         PessoaFisica pessoa = new PessoaFisica();
@@ -324,7 +323,11 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     @Transactional
-    public CadastroAdminResponseDTO cadastrarPorAdmin(CadastroAdminDTO dto) {
+    public CadastroAdminResponseDTO cadastrarPorAdmin(@Valid CadastroAdminDTO dto) {
+
+        if (repository.findByLogin(dto.email()) != null) {
+            throw new ValidationException("login", "O login informado já existe, informe outro login.");
+        }
 
         Usuario entity = new Usuario();
         PessoaFisica pessoa = new PessoaFisica();
@@ -371,7 +374,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     @Transactional
-    public CadastroAdminResponseDTO alterarPorAdmin(Long id, CadastroAdminDTO dto) {
+    public CadastroAdminResponseDTO alterarPorAdmin(Long id, @Valid CadastroAdminDTO dto) {
 
         Usuario entity = repository.findById(id);
 

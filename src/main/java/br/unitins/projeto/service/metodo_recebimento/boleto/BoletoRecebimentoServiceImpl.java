@@ -7,6 +7,7 @@ import br.unitins.projeto.repository.BoletoRecebimentoRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.NotFoundException;
 
 import java.util.List;
@@ -45,7 +46,7 @@ public class BoletoRecebimentoServiceImpl implements BoletoRecebimentoService {
     }
 
     @Transactional
-    public BoletoRecebimentoResponseDTO create(BoletoRecebimentoDTO dto) {
+    public BoletoRecebimentoResponseDTO create(@Valid BoletoRecebimentoDTO dto) {
         BoletoRecebimento boletoRecebimento = new BoletoRecebimento();
         boletoRecebimento.setBanco(dto.banco());
         boletoRecebimento.setNome(dto.nome());
@@ -61,7 +62,7 @@ public class BoletoRecebimentoServiceImpl implements BoletoRecebimentoService {
 
     @Override
     @Transactional
-    public BoletoRecebimentoResponseDTO update(Long id, BoletoRecebimentoDTO dto) {
+    public BoletoRecebimentoResponseDTO update(Long id, @Valid BoletoRecebimentoDTO dto) {
 
         BoletoRecebimento boletoRecebimento = repository.findById(id);
 

@@ -11,6 +11,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Valid;
 import jakarta.validation.Validator;
 import jakarta.ws.rs.NotFoundException;
 import br.unitins.projeto.dto.estado.EstadoDTO;
@@ -46,8 +47,7 @@ public class EstadoServiceImpl implements EstadoService {
 
     @Override
     @Transactional
-    public EstadoResponseDTO create(EstadoDTO estadoDTO) throws ConstraintViolationException {
-        validar(estadoDTO);
+    public EstadoResponseDTO create(@Valid EstadoDTO estadoDTO) throws ConstraintViolationException {
 
         Estado entity = new Estado();
         entity.setNome(estadoDTO.nome());
@@ -59,21 +59,13 @@ public class EstadoServiceImpl implements EstadoService {
 
     @Override
     @Transactional
-    public EstadoResponseDTO update(Long id, EstadoDTO estadoDTO) throws ConstraintViolationException {
-        validar(estadoDTO);
+    public EstadoResponseDTO update(Long id, @Valid EstadoDTO estadoDTO) throws ConstraintViolationException {
 
         Estado entity = repository.findById(id);
         entity.setNome(estadoDTO.nome());
         entity.setSigla(estadoDTO.sigla().toUpperCase());
 
         return new EstadoResponseDTO(entity);
-    }
-
-    private void validar(EstadoDTO estadoDTO) throws ConstraintViolationException {
-        Set<ConstraintViolation<EstadoDTO>> violations = validator.validate(estadoDTO);
-
-        if (!violations.isEmpty())
-            throw new ConstraintViolationException(violations);
     }
 
     @Override

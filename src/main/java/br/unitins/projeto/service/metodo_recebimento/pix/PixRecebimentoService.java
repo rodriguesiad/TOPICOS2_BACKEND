@@ -2,6 +2,7 @@ package br.unitins.projeto.service.metodo_recebimento.pix;
 
 import br.unitins.projeto.dto.metodo.recebimento.pix.PixRecebimentoDTO;
 import br.unitins.projeto.dto.metodo.recebimento.pix.PixRecebimentoResponseDTO;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -15,9 +16,9 @@ public interface PixRecebimentoService {
 
     PixRecebimentoResponseDTO findById(Long id);
 
-    PixRecebimentoResponseDTO create(PixRecebimentoDTO dto);
+    PixRecebimentoResponseDTO create(@Valid PixRecebimentoDTO dto);
 
-    PixRecebimentoResponseDTO update(Long id, PixRecebimentoDTO dto);
+    PixRecebimentoResponseDTO update(Long id, @Valid PixRecebimentoDTO dto);
 
     void delete(Long id);
 

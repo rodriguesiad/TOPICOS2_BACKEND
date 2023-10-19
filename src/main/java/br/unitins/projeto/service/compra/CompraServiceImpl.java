@@ -87,7 +87,6 @@ public class CompraServiceImpl implements CompraService {
     @Override
     @Transactional
     public CompraResponseDTO create(CompraDTO dto, Long idUsuario) {
-        validar(dto);
 
         Compra entity = new Compra();
 

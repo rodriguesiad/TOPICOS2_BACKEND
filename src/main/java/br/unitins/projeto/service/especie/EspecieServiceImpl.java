@@ -10,6 +10,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Valid;
 import jakarta.validation.Validator;
 import jakarta.ws.rs.NotFoundException;
 
@@ -45,8 +46,7 @@ public class EspecieServiceImpl implements EspecieService {
 
     @Override
     @Transactional
-    public EspecieResponseDTO create(EspecieDTO especieDto) throws ConstraintViolationException {
-        validar(especieDto);
+    public EspecieResponseDTO create(@Valid EspecieDTO especieDto) throws ConstraintViolationException {
 
         Especie entity = new Especie();
         entity.setNome(especieDto.nome());
@@ -58,21 +58,13 @@ public class EspecieServiceImpl implements EspecieService {
 
     @Override
     @Transactional
-    public EspecieResponseDTO update(Long id, EspecieDTO especieDto) throws ConstraintViolationException {
-        validar(especieDto);
+    public EspecieResponseDTO update(Long id, @Valid EspecieDTO especieDto) throws ConstraintViolationException {
 
         Especie entity = repository.findById(id);
         entity.setNome(especieDto.nome());
         entity.setAtivo(true);
 
         return new EspecieResponseDTO(entity);
-    }
-
-    private void validar(EspecieDTO especieDto) throws ConstraintViolationException {
-        Set<ConstraintViolation<EspecieDTO>> violations = validator.validate(especieDto);
-
-        if (!violations.isEmpty())
-            throw new ConstraintViolationException(violations);
     }
 
     @Override

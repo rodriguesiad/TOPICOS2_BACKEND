@@ -2,6 +2,7 @@ package br.unitins.projeto.service.especie;
 
 import br.unitins.projeto.dto.especie.EspecieDTO;
 import br.unitins.projeto.dto.especie.EspecieResponseDTO;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -11,9 +12,9 @@ public interface EspecieService {
 
     EspecieResponseDTO findById(Long id);
 
-    EspecieResponseDTO create(EspecieDTO productDTO);
+    EspecieResponseDTO create(@Valid EspecieDTO productDTO);
 
-    EspecieResponseDTO update(Long id, EspecieDTO productDTO);
+    EspecieResponseDTO update(Long id, @Valid EspecieDTO productDTO);
 
     void delete(Long id);
 

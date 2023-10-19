@@ -14,6 +14,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.NotFoundException;
 
 import java.util.List;
@@ -54,7 +55,7 @@ public class PixRecebimentoServiceImpl implements PixRecebimentoService {
 
     @Override
     @Transactional
-    public PixRecebimentoResponseDTO create(PixRecebimentoDTO dto) {
+    public PixRecebimentoResponseDTO create(@Valid PixRecebimentoDTO dto) {
         PixRecebimento pixRecebimento = new PixRecebimento();
         pixRecebimento.setChave(dto.chave());
         pixRecebimento.setTipoChavePix(TipoChavePix.valueOf(dto.tipoChavePix()));
@@ -67,7 +68,7 @@ public class PixRecebimentoServiceImpl implements PixRecebimentoService {
 
     @Override
     @Transactional
-    public PixRecebimentoResponseDTO update(Long id, PixRecebimentoDTO dto) {
+    public PixRecebimentoResponseDTO update(Long id, @Valid PixRecebimentoDTO dto) {
 
         PixRecebimento entity = repository.findById(id);
 

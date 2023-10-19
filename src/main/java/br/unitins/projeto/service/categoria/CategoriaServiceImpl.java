@@ -10,6 +10,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Valid;
 import jakarta.validation.Validator;
 import jakarta.ws.rs.NotFoundException;
 
@@ -45,8 +46,7 @@ public class CategoriaServiceImpl implements CategoriaService {
 
     @Override
     @Transactional
-    public CategoriaResponseDTO create(CategoriaDTO categoriaDto) throws ConstraintViolationException {
-        validar(categoriaDto);
+    public CategoriaResponseDTO create(@Valid CategoriaDTO categoriaDto) throws ConstraintViolationException {
 
         Categoria entity = new Categoria();
         entity.setNome(categoriaDto.nome());
@@ -58,20 +58,12 @@ public class CategoriaServiceImpl implements CategoriaService {
 
     @Override
     @Transactional
-    public CategoriaResponseDTO update(Long id, CategoriaDTO categoriaDto) throws ConstraintViolationException {
-        validar(categoriaDto);
+    public CategoriaResponseDTO update(Long id, @Valid CategoriaDTO categoriaDto) throws ConstraintViolationException {
 
         Categoria entity = repository.findById(id);
         entity.setNome(categoriaDto.nome());
 
         return new CategoriaResponseDTO(entity);
-    }
-
-    private void validar(CategoriaDTO categoriaDto) throws ConstraintViolationException {
-        Set<ConstraintViolation<CategoriaDTO>> violations = validator.validate(categoriaDto);
-
-        if (!violations.isEmpty())
-            throw new ConstraintViolationException(violations);
     }
 
     @Override

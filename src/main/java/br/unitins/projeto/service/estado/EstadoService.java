@@ -4,6 +4,7 @@ import java.util.List;
 
 import br.unitins.projeto.dto.estado.EstadoDTO;
 import br.unitins.projeto.dto.estado.EstadoResponseDTO;
+import jakarta.validation.Valid;
 
 public interface EstadoService {
 
@@ -11,9 +12,9 @@ public interface EstadoService {
 
     EstadoResponseDTO findById(Long id);
 
-    EstadoResponseDTO create(EstadoDTO productDTO);
+    EstadoResponseDTO create(@Valid EstadoDTO productDTO);
 
-    EstadoResponseDTO update(Long id, EstadoDTO productDTO);
+    EstadoResponseDTO update(Long id, @Valid EstadoDTO productDTO);
 
     List<EstadoResponseDTO> findAllPaginado(int pageNumber, int pageSize);
 
