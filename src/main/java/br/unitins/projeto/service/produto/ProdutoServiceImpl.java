@@ -1,31 +1,33 @@
 package br.unitins.projeto.service.produto;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import br.unitins.projeto.dto.produto.ProdutoDTO;
 import br.unitins.projeto.dto.produto.ProdutoResponseDTO;
+import br.unitins.projeto.form.ProdutoImageForm;
 import br.unitins.projeto.model.PorteAnimal;
 import br.unitins.projeto.model.Produto;
 import br.unitins.projeto.repository.CategoriaRepository;
 import br.unitins.projeto.repository.EspecieRepository;
 import br.unitins.projeto.repository.ProdutoRepository;
 import br.unitins.projeto.repository.RacaRepository;
+import br.unitins.projeto.service.file.FileService;
 import io.quarkus.panache.common.Page;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import jakarta.validation.Validator;
 import jakarta.ws.rs.NotFoundException;
 
+import java.io.IOException;
+import java.io.NotActiveException;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @ApplicationScoped
 public class ProdutoServiceImpl implements ProdutoService {
-    
+
     @Inject
     ProdutoRepository repository;
 
@@ -40,6 +42,9 @@ public class ProdutoServiceImpl implements ProdutoService {
 
     @Inject
     Validator validator;
+
+    @Inject
+    FileService fileService;
 
     @Override
     public List<ProdutoResponseDTO> getAll() {
@@ -65,7 +70,7 @@ public class ProdutoServiceImpl implements ProdutoService {
         entity.setNome(produtoDto.nome());
         entity.setDescricao(produtoDto.descricao());
         entity.setEstoque(produtoDto.estoque());
-        entity.setAtivo(true);
+        entity.setAtivo(Boolean.TRUE);
         entity.setPeso(produtoDto.peso());
         entity.setPorteAnimal(PorteAnimal.valueOf(produtoDto.porte()));
         entity.setPreco(produtoDto.preco());
@@ -82,16 +87,21 @@ public class ProdutoServiceImpl implements ProdutoService {
     public ProdutoResponseDTO update(Long id, @Valid ProdutoDTO produtoDto) throws ConstraintViolationException {
 
         Produto entity = repository.findById(id);
+
+        if (entity == null){
+            throw new NotFoundException("Produto não encontrado");
+        }
+
         entity.setNome(produtoDto.nome());
         entity.setDescricao(produtoDto.descricao());
         entity.setEstoque(produtoDto.estoque());
-        entity.setAtivo(produtoDto.ativo());
         entity.setPeso(produtoDto.peso());
         entity.setPorteAnimal(PorteAnimal.valueOf(produtoDto.porte()));
         entity.setPreco(produtoDto.preco());
         entity.setCategoria(categoriaRepository.findById(produtoDto.idCategoria()));
         entity.setEspecie(especieRepository.findById(produtoDto.idEspecie()));
         entity.setRaca(racaRepository.findById(produtoDto.idRaca()));
+        entity.setAtivo(entity.getAtivo());
 
         repository.persist(entity);
 
@@ -142,4 +152,25 @@ public class ProdutoServiceImpl implements ProdutoService {
     public Long countByNome(String nome, Boolean ativo) {
         return repository.findByFiltro(nome, ativo).count();
     }
+
+    @Override
+    @Transactional
+    public void salvarImagens(ProdutoImageForm imagem) throws IOException {
+        Produto produto = repository.findById(imagem.getId());
+
+        if (produto == null) {
+            throw new NotActiveException("Produto não encontrado");
+        }
+
+        try {
+            String novoNomeImagem = fileService.salvarImagem(imagem.getImagem(), imagem.getNomeImagem(), "produto");
+            String imagemAntiga = produto.getNomeImagem();
+            produto.setNomeImagem(novoNomeImagem);
+
+            fileService.excluirImagem(imagemAntiga, "produto");
+        } catch (IOException e) {
+            throw e;
+        }
+    }
+
 }

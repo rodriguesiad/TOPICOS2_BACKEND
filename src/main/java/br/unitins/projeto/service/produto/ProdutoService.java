@@ -1,9 +1,11 @@
 package br.unitins.projeto.service.produto;
 
+import java.io.IOException;
 import java.util.List;
 
 import br.unitins.projeto.dto.produto.ProdutoDTO;
 import br.unitins.projeto.dto.produto.ProdutoResponseDTO;
+import br.unitins.projeto.form.ProdutoImageForm;
 import jakarta.validation.Valid;
 
 public interface ProdutoService {
@@ -27,5 +29,7 @@ public interface ProdutoService {
     Long countByNome(String nome, Boolean ativo);
 
     Long count();
+
+    void salvarImagens(ProdutoImageForm imagens) throws IOException;
 
 }

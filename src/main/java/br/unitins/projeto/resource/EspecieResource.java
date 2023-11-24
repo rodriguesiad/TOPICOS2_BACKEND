@@ -64,22 +64,10 @@ public class EspecieResource {
 //    @RolesAllowed({"Admin"})
     public Response insert(EspecieDTO dto) {
         LOG.infof("Inserindo um especies: %s", dto.nome());
-        Result result = null;
 
-        try {
-            EspecieResponseDTO response = service.create(dto);
-            LOG.infof("Espécie (%d) criado com sucesso.", response.id());
-            return Response.status(Status.CREATED).entity(response).build();
-        } catch (ConstraintViolationException e) {
-            LOG.error("Erro ao incluir um especies.");
-            LOG.debug(e.getMessage());
-            result = new Result(e.getConstraintViolations());
-        } catch (Exception e) {
-            LOG.fatal("Erro sem identificacao: " + e.getMessage());
-            result = new Result(e.getMessage(), false);
-        }
-
-        return Response.status(Status.NOT_FOUND).entity(result).build();
+        EspecieResponseDTO response = service.create(dto);
+        LOG.infof("Espécie (%d) criado com sucesso.", response.id());
+        return Response.status(Status.CREATED).entity(response).build();
     }
 
     @PUT

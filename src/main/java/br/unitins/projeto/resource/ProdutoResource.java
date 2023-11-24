@@ -1,16 +1,17 @@
 package br.unitins.projeto.resource;
 
 import br.unitins.projeto.application.Result;
-import br.unitins.projeto.dto.especie.EspecieResponseDTO;
 import br.unitins.projeto.dto.produto.ProdutoDTO;
 import br.unitins.projeto.dto.produto.ProdutoResponseDTO;
-import br.unitins.projeto.model.Produto;
+import br.unitins.projeto.form.ProdutoImageForm;
+import br.unitins.projeto.service.file.FileService;
 import br.unitins.projeto.service.produto.ProdutoService;
 import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PATCH;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
@@ -21,7 +22,9 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 import org.jboss.logging.Logger;
+import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 
+import java.io.IOException;
 import java.util.List;
 
 @Path("/produtos")
@@ -31,6 +34,9 @@ public class ProdutoResource {
 
     @Inject
     ProdutoService service;
+
+    @Inject
+    FileService fileService;
 
     private static final Logger LOG = Logger.getLogger(ProdutoResource.class);
 
@@ -183,6 +189,28 @@ public class ProdutoResource {
     public Long count(@QueryParam("nome") String nome,
                       @QueryParam("ativo") Boolean ativo) {
         return service.countByNome(nome, ativo);
+    }
+
+    @GET
+    @Path("/image/download/{nomeImagem}")
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    public Response download(@PathParam("nomeImagem") String nomeImagem) {
+        Response.ResponseBuilder response = Response.ok(fileService.download(nomeImagem, "produto"));
+        response.header("Content-Disposition", "attachment;filename=" + nomeImagem);
+        return response.build();
+    }
+
+    @PATCH
+    @Path("/image/upload")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    public Response salvarImagem(@MultipartForm ProdutoImageForm form){
+        try {
+            service.salvarImagens(form);
+            return Response.noContent().build();
+        } catch (IOException e) {
+            Result result = new Result(e.getMessage());
+            return Response.status(Status.CONFLICT).entity(result).build();
+        }
     }
 
 }

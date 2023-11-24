@@ -6,9 +6,6 @@ import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-
-import java.util.List;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -25,29 +22,28 @@ public class Produto extends DefaultEntity {
 
     @Column(nullable = false)
     private Integer estoque;
-    
+
     @Column(nullable = false)
     private Double peso;
-    
-    @OneToMany(mappedBy = "produto")
-    @Column(nullable = true)
-    private List<ProdutoImagem> imagens;
-    
+
+    @Column(name = "nome_imagem")
+    private String nomeImagem;
+
     @ManyToOne
     @JoinColumn(name = "id_raca")
     private Raca raca;
-    
+
     @ManyToOne
     @JoinColumn(name = "id_especie")
     private Especie especie;
-    
+
     @ManyToOne
     @JoinColumn(name = "id_categoria")
     private Categoria categoria;
-    
+
     @Column(nullable = false)
     private Boolean ativo;
-    
+
     private PorteAnimal porteAnimal;
 
     public Raca getRaca() {
@@ -115,14 +111,6 @@ public class Produto extends DefaultEntity {
         this.estoque = estoque;
     }
 
-    public List<ProdutoImagem> getImagens() {
-        return imagens;
-    }
-
-    public void setImagens(List<ProdutoImagem> imagens) {
-        this.imagens = imagens;
-    }
-
     public Boolean getAtivo() {
         return ativo;
     }
@@ -138,4 +126,13 @@ public class Produto extends DefaultEntity {
     public void setPeso(Double peso) {
         this.peso = peso;
     }
+
+    public String getNomeImagem() {
+        return nomeImagem;
+    }
+
+    public void setNomeImagem(String nomeImagem) {
+        this.nomeImagem = nomeImagem;
+    }
+
 }

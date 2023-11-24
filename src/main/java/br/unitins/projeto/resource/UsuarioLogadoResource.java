@@ -12,7 +12,7 @@ import br.unitins.projeto.dto.usuario.enderecos.UsuarioEnderecoResponseDTO;
 import br.unitins.projeto.dto.usuario.senha.SenhaDTO;
 import br.unitins.projeto.dto.usuario.telefone.UsuarioTelefoneDTO;
 import br.unitins.projeto.dto.usuario.telefone.UsuarioTelefoneResponseDTO;
-import br.unitins.projeto.form.ImageForm;
+import br.unitins.projeto.form.ProdutoImageForm;
 import br.unitins.projeto.service.compra.CompraService;
 import br.unitins.projeto.service.file.FileService;
 import br.unitins.projeto.service.usuario.UsuarioService;
@@ -282,12 +282,12 @@ public class UsuarioLogadoResource {
     @Path("/imagem")
 //    @RolesAllowed({"Admin", "User"})
     @Consumes(MediaType.MULTIPART_FORM_DATA)
-    public Response salvarImagem(@MultipartForm ImageForm form) {
+    public Response salvarImagem(@MultipartForm ProdutoImageForm form) {
         String nomeImagem = "";
         Long id = this.getIdUsuario();
 
         try {
-            nomeImagem = fileService.salvarImagem(form.getImagem(), form.getNomeImagem(), "usuario", jwt.getSubject());
+            nomeImagem = fileService.salvarImagem(form.getImagem(), form.getNomeImagem(), "usuario");
         } catch (IOException e) {
             Result result = new Result(e.getMessage());
             return Response.status(Status.CONFLICT).entity(result).build();
@@ -302,7 +302,7 @@ public class UsuarioLogadoResource {
 //    @RolesAllowed({"Admin", "User"})
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     public Response download(@PathParam("nomeImagem") String nomeImagem) {
-        Response.ResponseBuilder response = Response.ok(fileService.download(nomeImagem, "usuario", jwt.getSubject()));
+        Response.ResponseBuilder response = Response.ok(fileService.download(nomeImagem, "usuario"));
         response.header("Content-Disposition", "attachment;filename=" + nomeImagem);
 
         return response.build();

@@ -17,12 +17,13 @@ public record ProdutoResponseDTO(
         PorteAnimal porte,
         RacaResponseDTO raca,
         EspecieResponseDTO especie,
-        CategoriaResponseDTO categoria
+        CategoriaResponseDTO categoria,
+        String nomeImagem
 
 ) {
     public ProdutoResponseDTO(Produto entity) {
         this(entity.getId(),
-        entity.getNome(), 
+        entity.getNome(),
         entity.getDescricao(),
         entity.getPreco(),
         entity.getAtivo(),
@@ -31,6 +32,7 @@ public record ProdutoResponseDTO(
         entity.getPorteAnimal(),
         new RacaResponseDTO(entity.getRaca()),
         new EspecieResponseDTO(entity.getEspecie()),
-        new CategoriaResponseDTO(entity.getCategoria()));
+        new CategoriaResponseDTO(entity.getCategoria()),
+        entity.getNomeImagem());
     }
 }

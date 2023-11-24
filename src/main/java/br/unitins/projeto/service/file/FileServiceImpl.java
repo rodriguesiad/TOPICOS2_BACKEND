@@ -20,9 +20,9 @@ public class FileServiceImpl implements FileService {
             + File.separator;
 
     @Override
-    public String salvarImagem(byte[] imagem, String nomeImagem, String caminho, String identificador) throws IOException {
+    public String salvarImagem(byte[] imagem, String nomeImagem, String caminho) throws IOException {
         String mimeType = Files.probeContentType(new File(nomeImagem).toPath());
-        List<String> listMimeType = Arrays.asList("image/jpg", "image/png", "image/gif");
+        List<String> listMimeType = Arrays.asList("image/jpg", "image/jpeg", "image/png", "image/gif");
 
         if (!listMimeType.contains(mimeType)) {
             throw new IOException("Tipo de imagem não suportada.");
@@ -32,7 +32,7 @@ public class FileServiceImpl implements FileService {
             throw new IOException("Arquivo muito grande.");
         }
 
-        File diretorio = new File(PATH + caminho + File.separator + identificador + File.separator);
+        File diretorio = new File(PATH + caminho + File.separator);
 
         if (!diretorio.exists()) {
             diretorio.mkdirs();
@@ -41,7 +41,7 @@ public class FileServiceImpl implements FileService {
         String nomeArquivo = UUID.randomUUID()
                 + "." + mimeType.substring(mimeType.lastIndexOf("/") + 1);
 
-        String path = PATH + caminho + File.separator + identificador + File.separator + nomeArquivo;
+        String path = PATH + caminho + File.separator + nomeArquivo;
 
         File file = new File(path);
 
@@ -61,9 +61,20 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public File download(String nomeArquivo, String caminho, String identificador) {
-        File file = new File(PATH + caminho + File.separator + identificador + File.separator + nomeArquivo);
+    public File download(String nomeArquivo, String caminho) {
+        File file = new File(PATH + caminho + File.separator + nomeArquivo);
         return file;
+    }
+
+    @Override
+    public boolean excluirImagem(String nomeArquivo, String caminho) {
+        File file = new File(PATH + caminho + File.separator + nomeArquivo);
+
+        if (file.exists() && file.isFile()) {
+            return file.delete();
+        }
+
+        return false;
     }
 
     private String generateRandomString() {
