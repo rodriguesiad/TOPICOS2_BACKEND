@@ -6,16 +6,16 @@ import jakarta.persistence.Converter;
 import br.unitins.projeto.model.Perfil;
 
 @Converter(autoApply = true)
-public class PerfilConverter implements AttributeConverter<Perfil, String> {
+public class PerfilConverter implements AttributeConverter<Perfil, Integer> {
 
     @Override
-    public String convertToDatabaseColumn(Perfil perfil) {
-        return perfil == null ? null : perfil.getLabel();
+    public Integer convertToDatabaseColumn(Perfil perfil) {
+        return perfil == null ? null : perfil.getId();
     }
 
     @Override
-    public Perfil convertToEntityAttribute(String label) {
-        return label == null ? null : Perfil.valueOf(label.toUpperCase());
+    public Perfil convertToEntityAttribute(Integer id) {
+        return id == null ? null : Perfil.valueOf(id);
     }
 
 }
