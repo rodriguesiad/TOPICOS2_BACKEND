@@ -1,5 +1,9 @@
 package br.unitins.projeto.service.raca;
 
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import br.unitins.projeto.dto.raca.RacaDTO;
 import br.unitins.projeto.dto.raca.RacaResponseDTO;
 import br.unitins.projeto.model.Raca;
@@ -8,16 +12,10 @@ import io.quarkus.panache.common.Page;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import jakarta.validation.Validator;
 import jakarta.ws.rs.NotFoundException;
-
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class RacaServiceImpl implements RacaService {
@@ -52,7 +50,6 @@ public class RacaServiceImpl implements RacaService {
         entity.setNome(racaDto.nome());
         entity.setAtivo(true);
         repository.persist(entity);
-        
 
         return new RacaResponseDTO(entity);
     }
@@ -78,7 +75,7 @@ public class RacaServiceImpl implements RacaService {
     public List<RacaResponseDTO> findByNome(String nome, String situacao, int pageNumber, int pageSize) {
         Boolean ativo = null;
 
-        if (situacao.equals("Inativo")){
+        if (situacao.equals("Inativo")) {
             ativo = false;
         } else if (situacao.equals("Ativo")) {
             ativo = true;
@@ -109,7 +106,7 @@ public class RacaServiceImpl implements RacaService {
     public Long countByNome(String nome, String situacao) {
         Boolean ativo = null;
 
-        if (situacao.equals("Inativo")){
+        if (situacao.equals("Inativo")) {
             ativo = false;
         } else if (situacao.equals("Ativo")) {
             ativo = true;

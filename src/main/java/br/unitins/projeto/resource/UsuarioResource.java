@@ -1,10 +1,15 @@
 package br.unitins.projeto.resource;
 
+import java.util.List;
+
+import org.jboss.logging.Logger;
+
 import br.unitins.projeto.application.Result;
 import br.unitins.projeto.dto.usuario.UsuarioDTO;
 import br.unitins.projeto.dto.usuario.UsuarioResponseDTO;
 import br.unitins.projeto.dto.usuario.cadastro.CadastroAdminDTO;
 import br.unitins.projeto.dto.usuario.cadastro.CadastroAdminResponseDTO;
+import br.unitins.projeto.model.Perfil;
 import br.unitins.projeto.service.usuario.UsuarioService;
 import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolationException;
@@ -21,9 +26,6 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
-import org.jboss.logging.Logger;
-
-import java.util.List;
 
 @Path("/usuarios")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -214,6 +216,12 @@ public class UsuarioResource {
         }
 
         return Response.status(Status.NOT_FOUND).entity(result).build();
+    }
+
+    @GET
+    @Path("/perfis")
+    public Response getPerfis(){
+        return Response.ok(Perfil.values()).build();
     }
 
 }

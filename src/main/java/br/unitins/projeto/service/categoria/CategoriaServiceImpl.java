@@ -1,5 +1,9 @@
 package br.unitins.projeto.service.categoria;
 
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import br.unitins.projeto.dto.categoria.CategoriaDTO;
 import br.unitins.projeto.dto.categoria.CategoriaResponseDTO;
 import br.unitins.projeto.model.Categoria;
@@ -8,16 +12,10 @@ import io.quarkus.panache.common.Page;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import jakarta.validation.Validator;
 import jakarta.ws.rs.NotFoundException;
-
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class CategoriaServiceImpl implements CategoriaService {

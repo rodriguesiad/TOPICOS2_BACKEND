@@ -1,5 +1,12 @@
 package br.unitins.projeto.service.compra;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
+
 import br.unitins.projeto.dto.compra.CompraDTO;
 import br.unitins.projeto.dto.compra.CompraResponseDTO;
 import br.unitins.projeto.dto.compra.StatusCompraDTO;
@@ -33,13 +40,6 @@ import jakarta.validation.Valid;
 import jakarta.validation.Validator;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.core.Response;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class CompraServiceImpl implements CompraService {
@@ -100,13 +100,12 @@ public class CompraServiceImpl implements CompraService {
         AtomicReference<Double> preco = new AtomicReference<>(0.0);
 
         dto.itensCompra().forEach(item -> {
-                    ItemCompra itemModel = itemCompraService.toModel(item);
-                    itemModel.setCompra(entity);
-                    itens.add(itemModel);
+            ItemCompra itemModel = itemCompraService.toModel(item);
+            itemModel.setCompra(entity);
+            itens.add(itemModel);
 
-                    preco.updateAndGet(v -> v + (itemModel.getPreco() * itemModel.getQuantidade()));
-                }
-        );
+            preco.updateAndGet(v -> v + (itemModel.getPreco() * itemModel.getQuantidade()));
+        });
 
         entity.setItensCompra(itens);
         entity.setTotalCompra(preco.get());
@@ -127,7 +126,8 @@ public class CompraServiceImpl implements CompraService {
                 throw new RuntimeException("A compra não pode regredir em níveis de status.");
             }
 
-            if (statusCompra.equals(StatusCompra.FINALIZADA) && !compra.getStatusCompra().equals(StatusCompra.ENVIADA)) {
+            if (statusCompra.equals(StatusCompra.FINALIZADA)
+                    && !compra.getStatusCompra().equals(StatusCompra.ENVIADA)) {
                 throw new RuntimeException("Uma compra não pode ser finalizada sem passar pelo estágio de entrega");
             }
 

@@ -1,5 +1,11 @@
 package br.unitins.projeto.service.usuario;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import br.unitins.projeto.dto.endereco.EnderecoDTO;
 import br.unitins.projeto.dto.endereco.EnderecoResponseDTO;
 import br.unitins.projeto.dto.endereco.EnderecoUpdateDTO;
@@ -17,7 +23,6 @@ import br.unitins.projeto.model.DefaultEntity;
 import br.unitins.projeto.model.Endereco;
 import br.unitins.projeto.model.Perfil;
 import br.unitins.projeto.model.PessoaFisica;
-import br.unitins.projeto.model.Raca;
 import br.unitins.projeto.model.Telefone;
 import br.unitins.projeto.model.Usuario;
 import br.unitins.projeto.repository.ProdutoRepository;
@@ -35,12 +40,6 @@ import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import jakarta.validation.Validator;
 import jakarta.ws.rs.NotFoundException;
-
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class UsuarioServiceImpl implements UsuarioService {

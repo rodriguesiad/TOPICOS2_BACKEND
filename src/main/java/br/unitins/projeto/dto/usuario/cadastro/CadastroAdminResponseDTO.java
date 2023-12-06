@@ -1,14 +1,13 @@
 package br.unitins.projeto.dto.usuario.cadastro;
 
+import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import br.unitins.projeto.dto.telefone.TelefoneResponseDTO;
 import br.unitins.projeto.model.Perfil;
 import br.unitins.projeto.model.Telefone;
 import br.unitins.projeto.model.Usuario;
-
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public record CadastroAdminResponseDTO(
 
@@ -18,7 +17,7 @@ public record CadastroAdminResponseDTO(
         String cpf,
         String senha,
         LocalDate dataNascimento,
-        List<Integer> perfis,
+        List<Perfil> perfis,
         List<TelefoneResponseDTO> telefones,
         Boolean ativo
 
@@ -33,7 +32,7 @@ public record CadastroAdminResponseDTO(
                     null,
                     entity.getSenha(),
                     null,
-                    entity.getPerfis().stream().map(perfil -> perfil.getId()).collect(Collectors.toList()),
+                    entity.getPerfis(),
                     gerarTelefoneDTO(entity.getListaTelefone()),
                     entity.getAtivo());
 
@@ -44,7 +43,7 @@ public record CadastroAdminResponseDTO(
                 entity.getPessoaFisica().getCpf(),
                 entity.getSenha(),
                 entity.getPessoaFisica().getDataNascimento(),
-                entity.getPerfis().stream().map(perfil -> perfil.getId()).collect(Collectors.toList()),
+                entity.getPerfis(),
                 gerarTelefoneDTO(entity.getListaTelefone()),
                 entity.getAtivo());
     }

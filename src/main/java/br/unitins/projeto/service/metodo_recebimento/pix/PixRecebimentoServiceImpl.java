@@ -1,24 +1,18 @@
 package br.unitins.projeto.service.metodo_recebimento.pix;
 
-import br.unitins.projeto.dto.estado.EstadoResponseDTO;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import br.unitins.projeto.dto.metodo.recebimento.pix.PixRecebimentoDTO;
 import br.unitins.projeto.dto.metodo.recebimento.pix.PixRecebimentoResponseDTO;
-import br.unitins.projeto.dto.municipio.MunicipioDTO;
-import br.unitins.projeto.dto.municipio.MunicipioResponseDTO;
-import br.unitins.projeto.model.Estado;
-import br.unitins.projeto.model.Municipio;
 import br.unitins.projeto.model.PixRecebimento;
 import br.unitins.projeto.model.TipoChavePix;
 import br.unitins.projeto.repository.PixRecebimentoRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.NotFoundException;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class PixRecebimentoServiceImpl implements PixRecebimentoService {

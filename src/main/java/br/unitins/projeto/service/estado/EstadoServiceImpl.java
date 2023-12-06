@@ -2,23 +2,20 @@ package br.unitins.projeto.service.estado;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
-import br.unitins.projeto.model.Raca;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.ConstraintViolationException;
-import jakarta.validation.Valid;
-import jakarta.validation.Validator;
-import jakarta.ws.rs.NotFoundException;
 import br.unitins.projeto.dto.estado.EstadoDTO;
 import br.unitins.projeto.dto.estado.EstadoResponseDTO;
 import br.unitins.projeto.model.Estado;
 import br.unitins.projeto.repository.EstadoRepository;
 import io.quarkus.panache.common.Page;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Valid;
+import jakarta.validation.Validator;
+import jakarta.ws.rs.NotFoundException;
 
 @ApplicationScoped
 public class EstadoServiceImpl implements EstadoService {

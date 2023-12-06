@@ -1,8 +1,11 @@
 package br.unitins.projeto.service.endereco_compra;
 
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import br.unitins.projeto.dto.endereco_compra.EnderecoCompraDTO;
 import br.unitins.projeto.dto.endereco_compra.EnderecoCompraResponseDTO;
-import br.unitins.projeto.model.Endereco;
 import br.unitins.projeto.model.EnderecoCompra;
 import br.unitins.projeto.repository.EnderecoCompraRepository;
 import br.unitins.projeto.repository.EnderecoRepository;
@@ -15,10 +18,6 @@ import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import jakarta.validation.Validator;
 import jakarta.ws.rs.NotFoundException;
-
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class EnderecoCompraServiceImpl implements EnderecoCompraService {
