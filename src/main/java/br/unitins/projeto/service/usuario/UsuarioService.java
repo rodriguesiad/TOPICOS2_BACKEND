@@ -58,16 +58,9 @@ public interface UsuarioService {
 
     UsuarioResponseDTO update(Long id, String nomeImagem);
 
-//    UsuarioListaDesejoResponseDTO getListaDesejo(Long id);
-//
-//    UsuarioListaDesejoResponseDTO insertProdutoListaDesejo(Long id, @Valid ListaDesejoDTO dto);
-
-//    void deleteItemListaDesejo(Long id, Long idProduto);
-
     CadastroAdminResponseDTO cadastrarPorAdmin(@Valid CadastroAdminDTO dto);
 
     CadastroAdminResponseDTO alterarPorAdmin(Long id, @Valid CadastroAdminDTO dto);
-
 
     CadastroAdminResponseDTO alterarSituacao(Long id, Boolean situacao);
 

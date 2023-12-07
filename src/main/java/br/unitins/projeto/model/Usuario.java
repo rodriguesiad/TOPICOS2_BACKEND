@@ -10,7 +10,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 
@@ -31,9 +30,7 @@ public class Usuario extends DefaultEntity {
     private List<Perfil> perfis;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinTable(name = "usuario_telefone",
-            joinColumns = @JoinColumn(name = "id_usuario"),
-            inverseJoinColumns = @JoinColumn(name = "id_telefone"))
+    @JoinTable(name = "usuario_telefone", joinColumns = @JoinColumn(name = "id_usuario"), inverseJoinColumns = @JoinColumn(name = "id_telefone"))
     private List<Telefone> listaTelefone;
 
     @OneToMany(mappedBy = "usuario")
@@ -42,10 +39,6 @@ public class Usuario extends DefaultEntity {
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "id_pessoa_fisica", unique = true)
     private PessoaFisica pessoaFisica;
-
-    @ManyToMany
-    @JoinTable(name = "lista_desejo", joinColumns = @JoinColumn(name = "id_usuario"), inverseJoinColumns = @JoinColumn(name = "id_produto"))
-    private List<Produto> listaDesejo;
 
     @Column(nullable = false)
     private Boolean ativo;
@@ -96,14 +89,6 @@ public class Usuario extends DefaultEntity {
 
     public void setPessoaFisica(PessoaFisica pessoaFisica) {
         this.pessoaFisica = pessoaFisica;
-    }
-
-    public List<Produto> getListaDesejo() {
-        return listaDesejo;
-    }
-
-    public void setListaDesejo(List<Produto> listaDesejo) {
-        this.listaDesejo = listaDesejo;
     }
 
     public String getNomeImagem() {
