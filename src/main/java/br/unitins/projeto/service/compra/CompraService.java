@@ -20,9 +20,9 @@ public interface CompraService {
 
     CompraResponseDTO findById(Long id);
 
-    CompraResponseDTO create(CompraDTO dto, Long idUsuario);
+    CompraResponseDTO create(@Valid CompraDTO dto, Long idUsuario);
 
-    CompraResponseDTO alterStatusCompra(Long idCompra, StatusCompraDTO dto);
+    CompraResponseDTO alterStatusCompra(Long idCompra, @Valid StatusCompraDTO dto);
 
     List<CompraResponseDTO> findByUsuario(Long idUsuario);
 
@@ -30,9 +30,9 @@ public interface CompraService {
 
     HistoricoEntregaResponseDTO insertHistoricoEntrega(Long idCompra, @Valid HistoricoEntregaDTO dto);
 
-    BoletoResponseDTO pagarPorBoleto(Long idCompra, @Valid BoletoDTO dto);
+    BoletoResponseDTO pagarPorBoleto(Long idCompra);
 
-    PixResponseDTO pagarPorPix(Long idCompra, @Valid PixDTO dto);
+    PixResponseDTO pagarPorPix(Long idCompra);
 
     Response getMetodoPagamento(Long idCompra);
 

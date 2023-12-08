@@ -1,13 +1,11 @@
 package br.unitins.projeto.dto.compra;
 
+import java.util.List;
+
 import br.unitins.projeto.dto.endereco_compra.EnderecoCompraDTO;
 import br.unitins.projeto.dto.item_compra.ItemCompraDTO;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 public record CompraDTO(
 

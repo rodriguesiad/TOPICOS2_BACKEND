@@ -1,45 +1,46 @@
 package br.unitins.projeto.service.compra;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
-
 import br.unitins.projeto.dto.compra.CompraDTO;
 import br.unitins.projeto.dto.compra.CompraResponseDTO;
 import br.unitins.projeto.dto.compra.StatusCompraDTO;
 import br.unitins.projeto.dto.historico_entrega.HistoricoEntregaDTO;
 import br.unitins.projeto.dto.historico_entrega.HistoricoEntregaResponseDTO;
-import br.unitins.projeto.dto.metodo.pagamento.boleto.BoletoDTO;
 import br.unitins.projeto.dto.metodo.pagamento.boleto.BoletoResponseDTO;
-import br.unitins.projeto.dto.metodo.pagamento.pix.PixDTO;
 import br.unitins.projeto.dto.metodo.pagamento.pix.PixResponseDTO;
 import br.unitins.projeto.model.Boleto;
+import br.unitins.projeto.model.BoletoRecebimento;
 import br.unitins.projeto.model.Compra;
 import br.unitins.projeto.model.HistoricoEntrega;
 import br.unitins.projeto.model.ItemCompra;
 import br.unitins.projeto.model.Pix;
+import br.unitins.projeto.model.PixRecebimento;
+import br.unitins.projeto.model.Produto;
 import br.unitins.projeto.model.StatusCompra;
-import br.unitins.projeto.model.TipoChavePix;
 import br.unitins.projeto.model.Usuario;
+import br.unitins.projeto.repository.BoletoRecebimentoRepository;
 import br.unitins.projeto.repository.BoletoRepository;
 import br.unitins.projeto.repository.CompraRepository;
 import br.unitins.projeto.repository.HistoricoEntregaRepository;
+import br.unitins.projeto.repository.PixRecebimentoRepository;
 import br.unitins.projeto.repository.PixRepository;
+import br.unitins.projeto.repository.ProdutoRepository;
 import br.unitins.projeto.repository.UsuarioRepository;
 import br.unitins.projeto.service.endereco_compra.EnderecoCompraService;
 import br.unitins.projeto.service.item_compra.ItemCompraService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import jakarta.validation.Validator;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.core.Response;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class CompraServiceImpl implements CompraService {
@@ -63,7 +64,16 @@ public class CompraServiceImpl implements CompraService {
     BoletoRepository boletoRepository;
 
     @Inject
+    BoletoRecebimentoRepository boletoRecebimentoRepository;
+
+    @Inject
     PixRepository pixRepository;
+
+    @Inject
+    PixRecebimentoRepository pixRecebimentoRepository;
+
+    @Inject
+    ProdutoRepository produtoRepository;
 
     @Inject
     Validator validator;
@@ -86,8 +96,7 @@ public class CompraServiceImpl implements CompraService {
 
     @Override
     @Transactional
-    public CompraResponseDTO create(CompraDTO dto, Long idUsuario) {
-
+    public CompraResponseDTO create(@Valid CompraDTO dto, Long idUsuario) {
         Compra entity = new Compra();
 
         entity.setUsuario(this.getUsuario(idUsuario));
@@ -99,11 +108,21 @@ public class CompraServiceImpl implements CompraService {
         List<ItemCompra> itens = new ArrayList<>();
         AtomicReference<Double> preco = new AtomicReference<>(0.0);
 
-        dto.itensCompra().forEach(item -> {
-            ItemCompra itemModel = itemCompraService.toModel(item);
+        dto.itensCompra().forEach(itemDTO -> {
+            ItemCompra itemModel = itemCompraService.toModel(itemDTO);
             itemModel.setCompra(entity);
-            itens.add(itemModel);
 
+            Produto produto = itemModel.getProduto();
+            int quantidadeComprada = itemModel.getQuantidade();
+
+            if (produto.getEstoque() >= quantidadeComprada) {
+                produto.setEstoque(produto.getEstoque() - quantidadeComprada);
+                produtoRepository.persist(produto);
+            } else {
+                throw new RuntimeException("Estoque insuficiente para o produto: " + produto.getNome());
+            }
+
+            itens.add(itemModel);
             preco.updateAndGet(v -> v + (itemModel.getPreco() * itemModel.getQuantidade()));
         });
 
@@ -115,7 +134,7 @@ public class CompraServiceImpl implements CompraService {
 
     @Override
     @Transactional
-    public CompraResponseDTO alterStatusCompra(Long idCompra, StatusCompraDTO dto) {
+    public CompraResponseDTO alterStatusCompra(Long idCompra, @Valid StatusCompraDTO dto) {
         Compra compra = this.getCompra(idCompra);
 
         if (!StatusCompra.CANCELADA.equals(compra.getStatusCompra())) {
@@ -184,17 +203,29 @@ public class CompraServiceImpl implements CompraService {
 
     @Override
     @Transactional
-    public BoletoResponseDTO pagarPorBoleto(Long idCompra, @Valid BoletoDTO dto) {
+    public BoletoResponseDTO pagarPorBoleto(Long idCompra) {
         Compra compra = getCompra(idCompra);
+        BoletoRecebimento boletoRecebimento = this.boletoRecebimentoRepository.findByAtivo(true);
 
         if (compra.getMetodoDePagamento() != null) {
             throw new RuntimeException("A compra já possuiu método de pagamento.");
         }
 
+        if (boletoRecebimento == null) {
+            throw new NotFoundException("Não foi encontrado cadastro de conta bancária para gerar boleto.");
+        }
+
         Boleto boleto = new Boleto();
-        boleto.setNumeroBoleto(dto.numeroBoleto());
-        boleto.setVencimento(dto.vencimento());
+        boleto.setNumeroBoleto(gerarNumeroBoleto());
+        boleto.setVencimento(LocalDateTime.now().toLocalDate().plusDays(3));
+        boleto.setAgencia(boletoRecebimento.getAgencia());
+        boleto.setCnpj(boletoRecebimento.getCnpj());
+        boleto.setBanco(boletoRecebimento.getBanco());
+        boleto.setConta(boletoRecebimento.getConta());
+        boleto.setValor(compra.getTotalCompra());
+        boleto.setNome(boletoRecebimento.getNome());
         boleto.setCompra(compra);
+
 
         boletoRepository.persist(boleto);
         compra.setMetodoDePagamento(boleto);
@@ -206,17 +237,21 @@ public class CompraServiceImpl implements CompraService {
 
     @Override
     @Transactional
-    public PixResponseDTO pagarPorPix(Long idCompra, @Valid PixDTO dto) {
+    public PixResponseDTO pagarPorPix(Long idCompra) {
         Compra compra = getCompra(idCompra);
+        PixRecebimento pixRecebimento = this.pixRecebimentoRepository.findByAtivo();
 
         if (compra.getMetodoDePagamento() != null) {
             throw new RuntimeException("A compra já possui método de pagamento.");
         }
 
-        TipoChavePix tipoChavePix = TipoChavePix.valueOf(dto.tipoChavePix());
+        if (pixRecebimento == null) {
+            throw new NotFoundException("Não foi encontrado cadastro de conta bancária para receber pix.");
+        }
+
         Pix pix = new Pix();
-        pix.setChave(dto.chave());
-        pix.setTipoChavePix(tipoChavePix);
+        pix.setChave(pixRecebimento.getChave());
+        pix.setTipoChavePix(pixRecebimento.getTipoChavePix());
         pix.setDataPagamento(LocalDateTime.now());
         pix.setValor(compra.getTotalCompra());
         pix.setCompra(compra);
@@ -254,13 +289,6 @@ public class CompraServiceImpl implements CompraService {
         return Response.ok(null).build();
     }
 
-    private void validar(CompraDTO dto) throws ConstraintViolationException {
-        Set<ConstraintViolation<CompraDTO>> violations = validator.validate(dto);
-
-        if (!violations.isEmpty())
-            throw new ConstraintViolationException(violations);
-    }
-
     private Usuario getUsuario(Long id) {
         Usuario usuario = usuarioRepository.findById(id);
 
@@ -277,6 +305,16 @@ public class CompraServiceImpl implements CompraService {
             throw new NotFoundException("Compra não encontrada.");
 
         return compra;
+    }
+
+    private String gerarNumeroBoleto() {
+        Random random = new Random();
+        int numeroBase = 100000;
+        int digitoVerificador = random.nextInt(10);
+
+        String numeroBoleto = String.valueOf(numeroBase) + String.valueOf(digitoVerificador);
+
+        return numeroBoleto;
     }
 
 }

@@ -21,6 +21,9 @@ public class Boleto extends MetodoDePagamento {
     @Column(name = "banco", nullable = false)
     private String banco;
 
+    @Column(name = "conta", nullable = false)
+    private String conta;
+
     @Column(name = "nome", nullable = false)
     private String nome;
 
@@ -77,4 +80,13 @@ public class Boleto extends MetodoDePagamento {
     public void setAgencia(String agencia) {
         this.agencia = agencia;
     }
+
+    public String getConta() {
+        return conta;
+    }
+
+    public void setConta(String conta) {
+        this.conta = conta;
+    }
+
 }
