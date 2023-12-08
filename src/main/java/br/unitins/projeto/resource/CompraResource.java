@@ -7,7 +7,10 @@ import br.unitins.projeto.dto.historico_entrega.HistoricoEntregaDTO;
 import br.unitins.projeto.dto.historico_entrega.HistoricoEntregaResponseDTO;
 import br.unitins.projeto.dto.metodo.pagamento.boleto.BoletoResponseDTO;
 import br.unitins.projeto.dto.metodo.pagamento.pix.PixResponseDTO;
+import br.unitins.projeto.dto.produto.ProdutoResponseDTO;
 import br.unitins.projeto.dto.usuario.UsuarioResponseDTO;
+import br.unitins.projeto.model.Perfil;
+import br.unitins.projeto.model.StatusCompra;
 import br.unitins.projeto.service.compra.CompraService;
 import br.unitins.projeto.service.usuario.UsuarioService;
 import jakarta.inject.Inject;
@@ -48,6 +51,13 @@ public class CompraResource {
         // UsuarioResponseDTO usuario = usuarioService.findByLogin(login);
         UsuarioResponseDTO usuario = usuarioService.findById(1L);
         return usuario.id();
+    }
+
+    @GET
+    @Path("/{id}")
+    public CompraResponseDTO findById(@PathParam("id") Long id) {
+        LOG.info("Buscando uma compra pelo id.");
+        return service.findById(id);
     }
 
     @POST
@@ -118,6 +128,12 @@ public class CompraResource {
         Response response = service.getMetodoPagamento(id);
         LOG.infof("Busca de método de pagamento realizada com sucesso.");
         return response;
+    }
+
+    @GET
+    @Path("/status-compra")
+    public Response getStatusCompra(){
+        return Response.ok(StatusCompra.values()).build();
     }
 
 }
