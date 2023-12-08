@@ -53,6 +53,16 @@ public class ProdutoResource {
         return service.findById(id);
     }
 
+    @GET
+    @Path("/recomendacoes")
+    public List<ProdutoResponseDTO> findRecomendacoes(@QueryParam("idRaca") Long idRaca,
+                                                @QueryParam("idCategoria") Long idCategoria,
+                                                @QueryParam("idEspecie") Long idEspecie) {
+        LOG.info("Buscando recomendações.");
+        return service.findProdutosRelacionados(idRaca, idCategoria, idEspecie);
+    }
+
+
     @POST
 //    @RolesAllowed({"Admin"})
     public Response insert(ProdutoDTO dto) {
