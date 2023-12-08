@@ -7,6 +7,7 @@ import br.unitins.projeto.dto.compra.StatusCompraDTO;
 import br.unitins.projeto.dto.historico_entrega.HistoricoEntregaDTO;
 import br.unitins.projeto.dto.historico_entrega.HistoricoEntregaResponseDTO;
 import br.unitins.projeto.dto.metodo.pagamento.pix.PixResponseDTO;
+import br.unitins.projeto.dto.usuario.cadastro.CadastroAdminResponseDTO;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.core.Response;
 
@@ -33,5 +34,7 @@ public interface CompraService {
     PixResponseDTO pagarPorPix(Long idCompra);
 
     Response getMetodoPagamento(Long idCompra);
+
+    List<CompraResponseDTO> findAllByUsuario(Long idUsuario, int pageNumber, int pageSize);
 
 }

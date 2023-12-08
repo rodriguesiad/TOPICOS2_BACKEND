@@ -7,6 +7,7 @@ import br.unitins.projeto.dto.historico_entrega.HistoricoEntregaDTO;
 import br.unitins.projeto.dto.historico_entrega.HistoricoEntregaResponseDTO;
 import br.unitins.projeto.dto.metodo.pagamento.boleto.BoletoResponseDTO;
 import br.unitins.projeto.dto.metodo.pagamento.pix.PixResponseDTO;
+import br.unitins.projeto.dto.usuario.cadastro.CadastroAdminResponseDTO;
 import br.unitins.projeto.model.Boleto;
 import br.unitins.projeto.model.BoletoRecebimento;
 import br.unitins.projeto.model.Compra;
@@ -27,6 +28,7 @@ import br.unitins.projeto.repository.ProdutoRepository;
 import br.unitins.projeto.repository.UsuarioRepository;
 import br.unitins.projeto.service.endereco_compra.EnderecoCompraService;
 import br.unitins.projeto.service.item_compra.ItemCompraService;
+import io.quarkus.panache.common.Page;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -37,6 +39,7 @@ import jakarta.ws.rs.core.Response;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicReference;
@@ -164,7 +167,7 @@ public class CompraServiceImpl implements CompraService {
 
     @Override
     public List<CompraResponseDTO> findByUsuario(Long idUsuario) {
-        List<Compra> list = repository.findByUsuario(idUsuario);
+        List<Compra> list = repository.findByUsuario(idUsuario).stream().toList();
         return list.stream().map(compra -> CompraResponseDTO.valueOf(compra)).collect(Collectors.toList());
     }
 
@@ -287,6 +290,17 @@ public class CompraServiceImpl implements CompraService {
         }
 
         return Response.ok(null).build();
+    }
+
+    @Override
+    public List<CompraResponseDTO> findAllByUsuario(Long idUsuario, int pageNumber, int pageSize) {
+        List<Compra> lista = this.repository.findByUsuario(idUsuario)
+                .page(Page.of(pageNumber, pageSize))
+                .list().stream()
+                .sorted(Comparator.comparing(Compra::getDataInclusao).reversed())
+                .collect(Collectors.toList());
+
+        return lista.stream().map(compra -> CompraResponseDTO.valueOf(compra)).collect(Collectors.toList());
     }
 
     private Usuario getUsuario(Long id) {

@@ -9,6 +9,7 @@ import br.unitins.projeto.dto.metodo.pagamento.boleto.BoletoResponseDTO;
 import br.unitins.projeto.dto.metodo.pagamento.pix.PixResponseDTO;
 import br.unitins.projeto.dto.produto.ProdutoResponseDTO;
 import br.unitins.projeto.dto.usuario.UsuarioResponseDTO;
+import br.unitins.projeto.dto.usuario.cadastro.CadastroAdminResponseDTO;
 import br.unitins.projeto.model.Perfil;
 import br.unitins.projeto.model.StatusCompra;
 import br.unitins.projeto.service.compra.CompraService;
@@ -22,6 +23,7 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
@@ -51,6 +53,15 @@ public class CompraResource {
         // UsuarioResponseDTO usuario = usuarioService.findByLogin(login);
         UsuarioResponseDTO usuario = usuarioService.findById(1L);
         return usuario.id();
+    }
+
+    @GET
+    @Path("/all")
+    public List<CompraResponseDTO> getByUsuarioPaginado(
+            @QueryParam("page") int pageNumber,
+            @QueryParam("pageSize") int pageSize
+    ) {
+        return service.findAllByUsuario(getIdUsuario(), pageNumber, pageSize);
     }
 
     @GET

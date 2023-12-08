@@ -24,7 +24,7 @@ public class Usuario extends DefaultEntity {
 
     private String nomeImagem;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "perfis", joinColumns = @JoinColumn(name = "id_usuario", referencedColumnName = "id"))
     @Column(name = "perfil", length = 30) // Nome da coluna que armazena o valor do enum
     private List<Perfil> perfis;

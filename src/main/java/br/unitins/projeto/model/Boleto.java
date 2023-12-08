@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @PrimaryKeyJoinColumn(name = "id")
 public class Boleto extends MetodoDePagamento {
 
-    @Column(name = "numero", nullable = false, unique = true)
+    @Column(name = "numero", nullable = false)
     private String numeroBoleto;
 
     @Column(name = "data_vencimento", columnDefinition = "TIMESTAMP")

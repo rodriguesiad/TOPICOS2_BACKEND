@@ -12,6 +12,8 @@ public record ItemCompraResponseDTO(
 
         Long idProduto,
 
+        String imagemProduto,
+
         String nome
 
 ) {
@@ -20,6 +22,7 @@ public record ItemCompraResponseDTO(
         return new ItemCompraResponseDTO(entity.getId(),
                 entity.getQuantidade(), entity.getPreco(),
                 entity.getProduto().getId(),
+                entity.getProduto().getNomeImagem(),
                 entity.getProduto().getNome());
     }
 
