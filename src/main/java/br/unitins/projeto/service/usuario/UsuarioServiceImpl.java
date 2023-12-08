@@ -98,7 +98,7 @@ public class UsuarioServiceImpl implements UsuarioService {
             entity.setListaTelefone(telefonesModel);
         }
 
-
+        entity.setAtivo(true);
         entity.setPessoaFisica(pessoa);
 
         List<Perfil> perfis = new ArrayList<>();
