@@ -173,4 +173,9 @@ public class ProdutoServiceImpl implements ProdutoService {
         }
     }
 
+    public List<ProdutoResponseDTO> findProdutosRelacionados(Long idRaca, Long idCategoria, Long idEspecie) {
+        return repository.findProdutosRecomendados(idRaca, idCategoria, idEspecie)
+                .stream().map(ProdutoResponseDTO::new).collect(Collectors.toList());
+    }
+
 }

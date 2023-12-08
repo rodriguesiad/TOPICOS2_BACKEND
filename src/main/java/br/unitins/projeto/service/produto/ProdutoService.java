@@ -12,6 +12,8 @@ public interface ProdutoService {
     
     List<ProdutoResponseDTO> getAll();
 
+    List<ProdutoResponseDTO> findProdutosRelacionados(Long idRaca, Long idCategoria, Long idEspecie);
+
     ProdutoResponseDTO findById(Long id);
 
     ProdutoResponseDTO create(@Valid ProdutoDTO productDTO);
