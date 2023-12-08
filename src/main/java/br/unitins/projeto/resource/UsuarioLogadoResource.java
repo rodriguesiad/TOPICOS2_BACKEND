@@ -16,6 +16,7 @@ import br.unitins.projeto.form.ProdutoImageForm;
 import br.unitins.projeto.service.compra.CompraService;
 import br.unitins.projeto.service.file.FileService;
 import br.unitins.projeto.service.usuario.UsuarioService;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
