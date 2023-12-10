@@ -98,6 +98,7 @@ public class UsuarioServiceImpl implements UsuarioService {
             entity.setListaTelefone(telefonesModel);
         }
 
+        entity.setAtivo(true);
         entity.setPessoaFisica(pessoa);
 
         List<Perfil> perfis = new ArrayList<>();
@@ -108,6 +109,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
         return UsuarioResponseDTO.valueOf(entity);
     }
+
 
     private void validar(UsuarioDTO usuarioDTO) throws ConstraintViolationException {
         Set<ConstraintViolation<UsuarioDTO>> violations = validator.validate(usuarioDTO);
@@ -123,11 +125,10 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public List<CadastroAdminResponseDTO> findByCampoBusca(String campoBusca, String situacao, int pageNumber,
-            int pageSize) {
+    public List<CadastroAdminResponseDTO> findByCampoBusca(String campoBusca, String situacao, int pageNumber, int pageSize) {
         Boolean ativo = null;
 
-        if (situacao.equals("Inativo")) {
+        if (situacao.equals("Inativo")){
             ativo = false;
         } else if (situacao.equals("Ativo")) {
             ativo = true;
@@ -147,7 +148,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     public Long countByCampoBusca(String campoBusca, String situacao) {
         Boolean ativo = null;
 
-        if (situacao.equals("Inativo")) {
+        if (situacao.equals("Inativo")){
             ativo = false;
         } else if (situacao.equals("Ativo")) {
             ativo = true;
@@ -155,6 +156,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
         return repository.findByCampoBusca(campoBusca, ativo).count();
     }
+
 
     @Override
     public Long count() {
@@ -220,6 +222,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
         return UsuarioEnderecoResponseDTO.valueOf(usuario);
     }
+
 
     @Override
     @Transactional
@@ -336,7 +339,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         entity.setLogin(dto.email());
         entity.setSenha(hashService.getHashSenha(dto.senha()));
 
-        if (dto.telefones() != null) {
+        if (dto.telefones() != null){
             List<Telefone> telefonesModel = dto.telefones().stream().map(telefoneDTO -> {
                 return telefoneService.toModel(telefoneDTO);
             }).collect(Collectors.toList());
@@ -344,13 +347,14 @@ public class UsuarioServiceImpl implements UsuarioService {
             entity.setListaTelefone(telefonesModel);
         }
 
+
         entity.setPessoaFisica(pessoa);
 
         List<Perfil> perfis = new ArrayList<>();
 
         if (dto.perfis() != null) {
-            for (Integer idPerfil : dto.perfis()) {
-                if (!Perfil.valueOf(idPerfil).equals(Perfil.COMUM)) {
+            for (Integer idPerfil : dto.perfis() ){
+                if (!Perfil.valueOf(idPerfil).equals(Perfil.COMUM)){
                     perfis.add(Perfil.valueOf(idPerfil));
                 }
             }
@@ -366,13 +370,14 @@ public class UsuarioServiceImpl implements UsuarioService {
         return CadastroAdminResponseDTO.valueOf(entity);
     }
 
+
     @Override
     @Transactional
     public CadastroAdminResponseDTO alterarPorAdmin(Long id, @Valid CadastroAdminDTO dto) {
 
         Usuario entity = repository.findById(id);
 
-        if (entity != null) {
+        if(entity != null){
             PessoaFisica pessoa = entity.getPessoaFisica();
 
             pessoa.setNome(dto.nome());
@@ -382,11 +387,11 @@ public class UsuarioServiceImpl implements UsuarioService {
 
             entity.setLogin(dto.email());
 
-            if (!dto.senha().equals(entity.getSenha())) {
+            if(!dto.senha().equals(entity.getSenha())){
                 entity.setSenha(hashService.getHashSenha(dto.senha()));
             }
 
-            if (dto.telefones() != null) {
+            if (dto.telefones() != null){
                 List<Telefone> telefonesModel = dto.telefones().stream().map(telefoneDTO -> {
                     return telefoneService.toModel(telefoneDTO);
                 }).collect(Collectors.toList());
@@ -394,13 +399,14 @@ public class UsuarioServiceImpl implements UsuarioService {
                 entity.setListaTelefone(telefonesModel);
             }
 
+
             entity.setPessoaFisica(pessoa);
 
             List<Perfil> perfis = new ArrayList<>();
 
             if (dto.perfis() != null) {
-                for (Integer idPerfil : dto.perfis()) {
-                    if (!Perfil.valueOf(idPerfil).equals(Perfil.COMUM)) {
+                for (Integer idPerfil : dto.perfis() ){
+                    if (!Perfil.valueOf(idPerfil).equals(Perfil.COMUM)){
                         perfis.add(Perfil.valueOf(idPerfil));
                     }
                 }
@@ -441,6 +447,47 @@ public class UsuarioServiceImpl implements UsuarioService {
 
         return CadastroAdminResponseDTO.valueOf(usuario);
     }
+
+//    @Override
+//    public UsuarioListaDesejoResponseDTO getListaDesejo(Long id) {
+//        Usuario usuario = getUsuario(id);
+//        return UsuarioListaDesejoResponseDTO.valueOf(usuario);
+//    }
+//
+//    @Override
+//    @Transactional
+//    public UsuarioListaDesejoResponseDTO insertProdutoListaDesejo(Long id, @Valid ListaDesejoDTO dto) {
+//        Usuario usuario = getUsuario(id);
+//        Produto produto = produtoRepository.findById(dto.idProduto());
+//
+//        if (usuario.getListaDesejo().isEmpty()) {
+//            usuario.setListaDesejo(new ArrayList<>());
+//        }
+//
+//        usuario.getListaDesejo().add(produto);
+//
+//        return UsuarioListaDesejoResponseDTO.valueOf(usuario);
+//    }
+
+//    @Override
+//    @Transactional
+//    public void deleteItemListaDesejo(Long id, Long idProduto) {
+//        Usuario usuario = getUsuario(id);
+//        Produto produto = produtoRepository.findById(idProduto);
+//
+//        if (usuario.getListaDesejo().isEmpty()) {
+//            throw new NotFoundException("O usuário não possuiu produtos na lista de desejo.");
+//        }
+//
+//        int index = usuario.getListaDesejo().stream()
+//                .map(DefaultEntity::getId)
+//                .toList().indexOf(idProduto);
+//
+//        if (index == -1)
+//            throw new NotFoundException("Produto não encontrado na lista de desejo");
+//
+//        usuario.getListaDesejo().remove(idProduto);
+//    }
 
     private Usuario getUsuario(Long id) {
         Usuario usuario = repository.findById(id);
