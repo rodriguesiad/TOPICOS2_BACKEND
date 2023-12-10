@@ -37,17 +37,32 @@ public class ProdutoRepository implements PanacheRepository<Produto> {
                 idRaca, idCategoria, idEspecie).page(0, 4).list();
 
         if (produtosRecomendados.isEmpty() || produtosRecomendados.size() < 4) {
-            produtosRecomendados.addAll(find("categoria.id = ?1 and especie.id = ?2 and ativo = true", idCategoria, idEspecie)
-                    .page(0, 4 - produtosRecomendados.size()).list());
+            List<Produto> produtos2 = find("categoria.id = ?1 and especie.id = ?2 and ativo = true", idCategoria, idEspecie)
+                    .page(0, 4 - produtosRecomendados.size()).list();
+            produtos2.forEach(x -> {
+                if (!produtosRecomendados.contains(x)) {
+                    produtosRecomendados.add(x);
+                }
+            });
         }
 
         if (produtosRecomendados.isEmpty() || produtosRecomendados.size() < 4) {
-            produtosRecomendados.addAll(find("especie.id = ?1 and ativo = true", idEspecie)
-                    .page(0, 4 - produtosRecomendados.size()).list());
+            List<Produto> produtos2 = find("especie.id = ?1 and ativo = true", idEspecie)
+                    .page(0, 4 - produtosRecomendados.size()).list();
+            produtos2.forEach(x -> {
+                if (!produtosRecomendados.contains(x)) {
+                    produtosRecomendados.add(x);
+                }
+            });
         }
 
         if (produtosRecomendados.isEmpty() || produtosRecomendados.size() < 4) {
-            produtosRecomendados.addAll(findAll().page(0, 4 - produtosRecomendados.size()).list());
+            List<Produto> produtos2 = findAll().page(0, 4 - produtosRecomendados.size()).list();
+            produtos2.forEach(x -> {
+                if (!produtosRecomendados.contains(x)) {
+                    produtosRecomendados.add(x);
+                }
+            });
         }
 
         return produtosRecomendados;
