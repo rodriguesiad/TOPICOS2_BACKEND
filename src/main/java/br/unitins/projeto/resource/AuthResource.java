@@ -45,7 +45,7 @@ public class AuthResource {
         Usuario usuario = usuarioService.findByLoginAndSenha(authDTO.login(), hash);
 
         if (usuario == null) {
-            return Response.status(Status.NO_CONTENT)
+            return Response.status(Status.NOT_FOUND)
                     .entity("Usuario não encontrado").build();
         }
         return Response.ok()
