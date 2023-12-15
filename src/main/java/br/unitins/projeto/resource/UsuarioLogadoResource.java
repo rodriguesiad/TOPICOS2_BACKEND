@@ -60,7 +60,7 @@ public class UsuarioLogadoResource {
 
     private Long getIdUsuario() {
         String login = jwt.getSubject();
-        UsuarioResponseDTO usuario = service.findByLogin("maria");
+        UsuarioResponseDTO usuario = service.findByLogin(login);
         return usuario.id();
     }
 
