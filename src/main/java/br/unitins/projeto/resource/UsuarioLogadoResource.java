@@ -16,6 +16,7 @@ import br.unitins.projeto.form.ProdutoImageForm;
 import br.unitins.projeto.service.compra.CompraService;
 import br.unitins.projeto.service.file.FileService;
 import br.unitins.projeto.service.usuario.UsuarioService;
+import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolationException;
@@ -59,7 +60,7 @@ public class UsuarioLogadoResource {
 
     private Long getIdUsuario() {
         String login = jwt.getSubject();
-        UsuarioResponseDTO usuario = service.findByLogin(login);
+        UsuarioResponseDTO usuario = service.findByLogin("maria");
         return usuario.id();
     }
 
@@ -74,8 +75,21 @@ public class UsuarioLogadoResource {
     }
 
     @GET
+    @Path("/icon-profile")
+    public int getIconProfile() {
+        return service.getIconProfile(getIdUsuario());
+    }
+
+    @PATCH
+    @Path("/icon-profile")
+    public void setIconProfile(@Valid Integer icon) {
+        service.setIconProfile(getIdUsuario(), icon);
+    }
+
+    @GET
     @Path("/dados-pessoais")
 //    @RolesAllowed({"Admin", "User"})
+    @PermitAll
     public Response getDadosPessoais() {
         LOG.info("Buscando dados pessoais do usuario");
         Result result = null;

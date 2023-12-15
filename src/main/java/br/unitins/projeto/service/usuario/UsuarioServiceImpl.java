@@ -32,6 +32,7 @@ import br.unitins.projeto.service.hash.HashService;
 import br.unitins.projeto.service.telefone.TelefoneService;
 import br.unitins.projeto.validation.ValidationException;
 import io.quarkus.panache.common.Page;
+import io.vertx.ext.web.handler.HttpException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -189,6 +190,17 @@ public class UsuarioServiceImpl implements UsuarioService {
         try {
             PessoaFisica pessoa = usuario.getPessoaFisica();
             pessoa.setDataNascimento(dto.dataNascimento());
+            pessoa.setNome(dto.nome());
+            pessoa.setCpf(dto.cpf());
+
+            if (dto.telefones() != null) {
+                List<Telefone> telefonesModel = dto.telefones().stream().map(telefoneDTO -> {
+                    return telefoneService.toModel(telefoneDTO);
+                }).collect(Collectors.toList());
+
+                usuario.setListaTelefone(telefonesModel);
+            }
+
             usuario.setPessoaFisica(pessoa);
 
             return DadosPessoaisResponseDTO.valueOf(usuario);
@@ -207,10 +219,12 @@ public class UsuarioServiceImpl implements UsuarioService {
                 usuario.setSenha(hashService.getHashSenha(dto.novaSenha()));
                 return true;
             } else {
-                return false;
+                throw new Exception("Senha Incorreta");
             }
         } catch (NullPointerException e) {
             throw new NullPointerException("O usuário não possui dados pessoais");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -233,6 +247,10 @@ public class UsuarioServiceImpl implements UsuarioService {
         Endereco endereco = enderecoService.toModel(dto);
         endereco.setUsuario(usuario);
         enderecoService.create(endereco);
+
+        if(endereco.getPrincipal()) {
+            usuario.getListaEndereco().forEach(end -> end.setPrincipal(false));
+        }
 
         usuario.getListaEndereco().add(endereco);
 
@@ -440,6 +458,25 @@ public class UsuarioServiceImpl implements UsuarioService {
         Usuario usuario = this.getUsuario(id);
 
         return CadastroAdminResponseDTO.valueOf(usuario);
+    }
+
+    public Integer getIconProfile(Long idUsuario) {
+        Usuario usuario = repository.findById(idUsuario);
+
+        if (usuario == null)
+            throw new NotFoundException("Usuário não encontrado.");
+
+        return usuario.getIconProfile();
+    }
+
+    @Transactional
+    public void setIconProfile(Long idUsuario, Integer newIcon) {
+        Usuario usuario = repository.findById(idUsuario);
+
+        if (usuario == null)
+            throw new NotFoundException("Usuário não encontrado.");
+
+        usuario.setIconProfile(newIcon);
     }
 
     private Usuario getUsuario(Long id) {

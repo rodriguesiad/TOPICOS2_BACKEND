@@ -5,6 +5,7 @@ import br.unitins.projeto.model.Usuario;
 import br.unitins.projeto.service.hash.HashService;
 import br.unitins.projeto.service.token_jwt.TokenJwtService;
 import br.unitins.projeto.service.usuario.UsuarioService;
+import jakarta.annotation.security.PermitAll;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
@@ -38,6 +39,7 @@ public class AuthResource {
 
     @POST
     @Produces(MediaType.TEXT_PLAIN)
+    @PermitAll
     public Response login(@Valid AuthUsuarioDTO authDTO) {
         LOG.infof("Fazendo login de usuário: %s", authDTO.login());
         String hash = hashService.getHashSenha(authDTO.senha());

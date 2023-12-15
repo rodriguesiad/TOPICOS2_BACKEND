@@ -17,4 +17,9 @@ public class MunicipioRepository implements PanacheRepository<Municipio> {
         return find("UPPER(nome) LIKE ?1 ", "%"+nome.toUpperCase()+"%");
     }
 
+    public List<Municipio> findByEstado(Long idEstado) {
+        if (idEstado == null)
+            return null;
+        return find("estado.id = ?1 ", idEstado).list();
+    }
 }

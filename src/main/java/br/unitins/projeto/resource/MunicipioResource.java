@@ -151,5 +151,11 @@ public class MunicipioResource {
         return service.countByNome(nome);
     }
 
+    @GET
+    @Path("/estado/{idEstado}")
+    public List<MunicipioResponseDTO> getByEstado(@PathParam("idEstado") Long idEstado) {
+        return service.findByEstado(idEstado);
+    }
+
 }
 

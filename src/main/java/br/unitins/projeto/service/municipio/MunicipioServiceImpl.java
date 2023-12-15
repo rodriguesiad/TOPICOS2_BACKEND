@@ -48,6 +48,12 @@ public class MunicipioServiceImpl implements MunicipioService {
     }
 
     @Override
+    public List<MunicipioResponseDTO> findByEstado(Long idEstado) {
+        List<Municipio> list = repository.findByEstado(idEstado);
+        return list.stream().map(MunicipioResponseDTO::new).collect(Collectors.toList());
+    }
+
+    @Override
     @Transactional
     public MunicipioResponseDTO create(@Valid MunicipioDTO municipioDTO) throws ConstraintViolationException {
         validar(municipioDTO);
