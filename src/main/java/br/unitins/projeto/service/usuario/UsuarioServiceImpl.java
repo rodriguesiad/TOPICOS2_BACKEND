@@ -30,6 +30,7 @@ import br.unitins.projeto.dto.usuario.UsuarioDTO;
 import br.unitins.projeto.dto.usuario.UsuarioResponseDTO;
 import br.unitins.projeto.dto.usuario.cadastro.CadastroAdminDTO;
 import br.unitins.projeto.dto.usuario.cadastro.CadastroAdminResponseDTO;
+import br.unitins.projeto.dto.usuario.cadastro.CadastroDTO;
 import br.unitins.projeto.dto.usuario.dados_pessoais.DadosPessoaisDTO;
 import br.unitins.projeto.dto.usuario.dados_pessoais.DadosPessoaisResponseDTO;
 import br.unitins.projeto.dto.usuario.enderecos.UsuarioEnderecoResponseDTO;
@@ -99,7 +100,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     @Transactional
-    public UsuarioResponseDTO create(@Valid UsuarioDTO usuarioDTO) throws ConstraintViolationException {
+    public UsuarioResponseDTO create(@Valid CadastroDTO usuarioDTO) throws ConstraintViolationException {
 
         Usuario entity = new Usuario();
         PessoaFisica pessoa = new PessoaFisica();
@@ -109,17 +110,17 @@ public class UsuarioServiceImpl implements UsuarioService {
         pessoa.setCpf(usuarioDTO.cpf());
         pessoa.setDataNascimento(usuarioDTO.dataNascimento());
 
-        entity.setLogin(usuarioDTO.login());
+        entity.setLogin(usuarioDTO.email());
         entity.setSenha(hashService.getHashSenha(usuarioDTO.senha()));
+        entity.setAtivo(true);
 
-        if (usuarioDTO.telefones() != null) {
-            List<Telefone> telefonesModel = usuarioDTO.telefones().stream().map(telefoneDTO -> {
-                return telefoneService.toModel(telefoneDTO);
+        if (usuarioDTO.enderecos() != null) {
+            List<Endereco> enderecosModel = usuarioDTO.enderecos().stream().map(enderecoDTO -> {
+                return enderecoService.toModel(enderecoDTO);
             }).collect(Collectors.toList());
 
-            entity.setListaTelefone(telefonesModel);
+            entity.setListaEndereco(enderecosModel);
         }
-
         entity.setPessoaFisica(pessoa);
 
         List<Perfil> perfis = new ArrayList<>();
@@ -130,6 +131,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
         return UsuarioResponseDTO.valueOf(entity);
     }
+
 
     private void validar(UsuarioDTO usuarioDTO) throws ConstraintViolationException {
         Set<ConstraintViolation<UsuarioDTO>> violations = validator.validate(usuarioDTO);
@@ -145,8 +147,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-    public List<CadastroAdminResponseDTO> findByCampoBusca(String campoBusca, String situacao, int pageNumber,
-            int pageSize) {
+    public List<CadastroAdminResponseDTO> findByCampoBusca(String campoBusca, String situacao, int pageNumber, int pageSize) {
         Boolean ativo = null;
 
         if (situacao.equals("Inativo")) {
@@ -177,6 +178,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
         return repository.findByCampoBusca(campoBusca, ativo).count();
     }
+
 
     @Override
     public Long count() {
@@ -211,6 +213,17 @@ public class UsuarioServiceImpl implements UsuarioService {
         try {
             PessoaFisica pessoa = usuario.getPessoaFisica();
             pessoa.setDataNascimento(dto.dataNascimento());
+            pessoa.setNome(dto.nome());
+            pessoa.setCpf(dto.cpf());
+
+            if (dto.telefones() != null) {
+                List<Telefone> telefonesModel = dto.telefones().stream().map(telefoneDTO -> {
+                    return telefoneService.toModel(telefoneDTO);
+                }).collect(Collectors.toList());
+
+                usuario.setListaTelefone(telefonesModel);
+            }
+
             usuario.setPessoaFisica(pessoa);
 
             return DadosPessoaisResponseDTO.valueOf(usuario);
@@ -229,10 +242,12 @@ public class UsuarioServiceImpl implements UsuarioService {
                 usuario.setSenha(hashService.getHashSenha(dto.novaSenha()));
                 return true;
             } else {
-                return false;
+                throw new Exception("Senha Incorreta");
             }
         } catch (NullPointerException e) {
             throw new NullPointerException("O usuário não possui dados pessoais");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -242,6 +257,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
         return UsuarioEnderecoResponseDTO.valueOf(usuario);
     }
+
 
     @Override
     @Transactional
@@ -255,6 +271,10 @@ public class UsuarioServiceImpl implements UsuarioService {
         Endereco endereco = enderecoService.toModel(dto);
         endereco.setUsuario(usuario);
         enderecoService.create(endereco);
+
+        if(endereco.getPrincipal()) {
+            usuario.getListaEndereco().forEach(end -> end.setPrincipal(false));
+        }
 
         usuario.getListaEndereco().add(endereco);
 
@@ -366,6 +386,7 @@ public class UsuarioServiceImpl implements UsuarioService {
             entity.setListaTelefone(telefonesModel);
         }
 
+
         entity.setPessoaFisica(pessoa);
 
         List<Perfil> perfis = new ArrayList<>();
@@ -387,6 +408,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
         return CadastroAdminResponseDTO.valueOf(entity);
     }
+
 
     @Override
     @Transactional
@@ -415,6 +437,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
                 entity.setListaTelefone(telefonesModel);
             }
+
 
             entity.setPessoaFisica(pessoa);
 
@@ -479,7 +502,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         List<Usuario> lista = repository.findAll().list();
         return gerarRelatorioPDF(lista);
     }
-    
+
     private byte[] gerarRelatorioPDF(List<Usuario> usuarios){
 
          // Crie um ByteArrayOutputStream para armazenar o PDF resultante
@@ -487,7 +510,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
         // Crie um documento PDF usando o iText7
         try (PdfDocument pdfDocument = new PdfDocument(new PdfWriter(baos))) {
-            
+
             Document document = new Document(pdfDocument, PageSize.A4);
             pdfDocument.addEventHandler(PdfDocumentEvent.END_PAGE, new HeaderFooterHandler());
 
@@ -500,7 +523,7 @@ public class UsuarioServiceImpl implements UsuarioService {
             Paragraph titulo = new Paragraph("Relatório de Usuários")
                     .setTextAlignment(TextAlignment.CENTER)
                     .setFontSize(22);
-                
+
             String dataHora = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm"));
             Paragraph subtitulo = new Paragraph("Gerado em: " + dataHora)
                     .setTextAlignment(TextAlignment.CENTER)
@@ -528,7 +551,7 @@ public class UsuarioServiceImpl implements UsuarioService {
             else{
                 tabela.addCell("Sim");
             }
-            
+
             int numeroCompras = (int) compraRepository.findByUsuario(usuario.getId()).count();
             tabela.addCell(String.valueOf(numeroCompras));
             }
@@ -552,14 +575,14 @@ public class UsuarioServiceImpl implements UsuarioService {
 
             PdfCanvas canvas = new PdfCanvas(page.newContentStreamBefore(), page.getResources(), pdf);
             canvas.beginText().setFontAndSize(pdf.getDefaultFont(), 12);
-            
+
             canvas.moveText(34, 20).showText("Página "+ pageNum);
 
             String dataHora = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy - hh:mm:ss"));
             canvas.moveText(500 - 80, 0).showText(dataHora);
 
             canvas.endText();
-                  
+
         }
     }
 }

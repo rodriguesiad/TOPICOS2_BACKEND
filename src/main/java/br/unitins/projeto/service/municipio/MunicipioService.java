@@ -23,4 +23,6 @@ public interface MunicipioService {
     Long count();
 
     Long countByNome(String nome);
+
+    List<MunicipioResponseDTO> findByEstado(Long idEstado);
 }

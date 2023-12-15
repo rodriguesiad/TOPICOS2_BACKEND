@@ -7,12 +7,12 @@ import br.unitins.projeto.dto.historico_entrega.HistoricoEntregaDTO;
 import br.unitins.projeto.dto.historico_entrega.HistoricoEntregaResponseDTO;
 import br.unitins.projeto.dto.metodo.pagamento.boleto.BoletoResponseDTO;
 import br.unitins.projeto.dto.metodo.pagamento.pix.PixResponseDTO;
-import br.unitins.projeto.dto.usuario.cadastro.CadastroAdminResponseDTO;
 import br.unitins.projeto.model.Boleto;
 import br.unitins.projeto.model.BoletoRecebimento;
 import br.unitins.projeto.model.Compra;
 import br.unitins.projeto.model.HistoricoEntrega;
 import br.unitins.projeto.model.ItemCompra;
+import br.unitins.projeto.model.MetodoDePagamento;
 import br.unitins.projeto.model.Pix;
 import br.unitins.projeto.model.PixRecebimento;
 import br.unitins.projeto.model.Produto;
@@ -22,6 +22,7 @@ import br.unitins.projeto.repository.BoletoRecebimentoRepository;
 import br.unitins.projeto.repository.BoletoRepository;
 import br.unitins.projeto.repository.CompraRepository;
 import br.unitins.projeto.repository.HistoricoEntregaRepository;
+import br.unitins.projeto.repository.MetodoDePagamentoRepository;
 import br.unitins.projeto.repository.PixRecebimentoRepository;
 import br.unitins.projeto.repository.PixRepository;
 import br.unitins.projeto.repository.ProdutoRepository;
@@ -35,7 +36,6 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.validation.Validator;
 import jakarta.ws.rs.NotFoundException;
-import jakarta.ws.rs.core.Response;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -80,6 +80,9 @@ public class CompraServiceImpl implements CompraService {
 
     @Inject
     Validator validator;
+
+    @Inject
+    MetodoDePagamentoRepository metodoDePagamentoRepository;
 
     @Override
     public List<CompraResponseDTO> getAll() {
@@ -228,6 +231,8 @@ public class CompraServiceImpl implements CompraService {
         boleto.setValor(compra.getTotalCompra());
         boleto.setNome(boletoRecebimento.getNome());
         boleto.setCompra(compra);
+        compra.setSinBoleto(true);
+        compra.setSinPix(false);
 
 
         boletoRepository.persist(boleto);
@@ -258,6 +263,8 @@ public class CompraServiceImpl implements CompraService {
         pix.setDataPagamento(LocalDateTime.now());
         pix.setValor(compra.getTotalCompra());
         pix.setCompra(compra);
+        compra.setSinPix(true);
+        compra.setSinBoleto(false);
 
         pixRepository.persist(pix);
         compra.setMetodoDePagamento(pix);
@@ -268,28 +275,25 @@ public class CompraServiceImpl implements CompraService {
     }
 
     @Override
-    public Response getMetodoPagamento(Long idCompra) {
-
+    public BoletoResponseDTO getBoleto(Long idCompra) {
         Compra compra = getCompra(idCompra);
-
-        if (compra.getMetodoDePagamento() != null) {
-
-            Boleto boleto = boletoRepository.findByIdAndCompra(compra.getMetodoDePagamento().getId(), compra.getId());
-            Pix pix = pixRepository.findByIdAndCompra(compra.getMetodoDePagamento().getId(), compra.getId());
-
-            if (boleto != null) {
-                BoletoResponseDTO boletoResponseDTO = new BoletoResponseDTO(boleto);
-                return Response.ok(boletoResponseDTO).build();
-            }
-
-            if (pix != null) {
-                PixResponseDTO pixResponseDTO = new PixResponseDTO(pix);
-                return Response.ok(pixResponseDTO).build();
-            }
-
+        MetodoDePagamento metodo = metodoDePagamentoRepository.findById(compra.getMetodoDePagamento().getId());
+        if (metodo instanceof Boleto) {
+            return new BoletoResponseDTO((Boleto) metodo);
+        } else {
+            return null;
         }
+    }
 
-        return Response.ok(null).build();
+    @Override
+    public PixResponseDTO getPix(Long idCompra) {
+        Compra compra = getCompra(idCompra);
+        MetodoDePagamento metodo = metodoDePagamentoRepository.findById(compra.getMetodoDePagamento().getId());
+        if (metodo instanceof Pix) {
+            return new PixResponseDTO((Pix) metodo);
+        } else {
+            return null;
+        }
     }
 
     @Override

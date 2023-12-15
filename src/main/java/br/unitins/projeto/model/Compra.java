@@ -44,6 +44,10 @@ public class Compra extends DefaultEntity {
     @JoinColumn(name = "id_metodo_pagamento", unique = true)
     private MetodoDePagamento metodoDePagamento;
 
+    private Boolean sinPix;
+
+    private Boolean sinBoleto;
+
     public LocalDateTime getDataPagamento() {
         return dataPagamento;
     }
@@ -108,4 +112,19 @@ public class Compra extends DefaultEntity {
         this.metodoDePagamento = metodoDePagamento;
     }
 
+    public Boolean getSinPix() {
+        return sinPix;
+    }
+
+    public void setSinPix(Boolean sinPix) {
+        this.sinPix = sinPix;
+    }
+
+    public Boolean getSinBoleto() {
+        return sinBoleto;
+    }
+
+    public void setSinBoleto(Boolean sinBoleto) {
+        this.sinBoleto = sinBoleto;
+    }
 }

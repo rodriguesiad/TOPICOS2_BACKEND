@@ -43,6 +43,9 @@ public class Usuario extends DefaultEntity {
     @Column(nullable = false)
     private Boolean ativo;
 
+    @Column(name = "icon_profile")
+    private Integer iconProfile;
+
     public String getLogin() {
         return login;
     }
@@ -107,4 +110,11 @@ public class Usuario extends DefaultEntity {
         this.ativo = ativo;
     }
 
+    public Integer getIconProfile() {
+        return iconProfile;
+    }
+
+    public void setIconProfile(Integer iconProfile) {
+        this.iconProfile = iconProfile;
+    }
 }

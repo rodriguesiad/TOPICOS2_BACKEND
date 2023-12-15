@@ -16,6 +16,7 @@ import br.unitins.projeto.form.ProdutoImageForm;
 import br.unitins.projeto.service.compra.CompraService;
 import br.unitins.projeto.service.file.FileService;
 import br.unitins.projeto.service.usuario.UsuarioService;
+import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolationException;
@@ -66,8 +67,7 @@ public class UsuarioLogadoResource {
     @GET
     @RolesAllowed({"Administrador", "Comum"})
     public Response getPerfilUsuario() {
-//        String login = jwt.getSubject();
-        String login = "maria";
+        String login = jwt.getSubject();
         UsuarioResponseDTO usuario = service.findByLogin(login);
         LOG.info("Buscando perfis do usuário logado.");
         return Response.ok(usuario).build();
@@ -121,7 +121,7 @@ public class UsuarioLogadoResource {
 
     @PATCH
     @Path("/alterar-senha")
-    @RolesAllowed({"Administrador", "Comum"})
+//    @RolesAllowed({"Admin", "User"})
     public Response alterarSenha(@Valid SenhaDTO dto) {
         LOG.info("Atualizando senha");
         Result result = null;

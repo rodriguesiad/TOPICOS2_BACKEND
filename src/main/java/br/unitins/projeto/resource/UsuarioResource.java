@@ -2,6 +2,7 @@ package br.unitins.projeto.resource;
 
 import java.util.List;
 
+import br.unitins.projeto.dto.usuario.cadastro.CadastroDTO;
 import org.jboss.logging.Logger;
 
 import br.unitins.projeto.application.Result;
@@ -27,7 +28,6 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.Response.ResponseBuilder;
 import jakarta.ws.rs.core.Response.Status;
 
 @Path("/usuarios")
@@ -41,7 +41,7 @@ public class UsuarioResource {
     private static final Logger LOG = Logger.getLogger(UsuarioResource.class);
 
     @GET
-    @RolesAllowed({"Administrador"})
+//    @RolesAllowed({"Admin"})
     public List<UsuarioResponseDTO> getAll() {
         LOG.info("Buscando todos os usuarios.");
         return service.getAll();
@@ -57,7 +57,7 @@ public class UsuarioResource {
 
     @POST
     @RolesAllowed({"Administrador", "Comum"})
-    public Response insert(@Valid UsuarioDTO dto) {
+    public Response insert(@Valid CadastroDTO dto) {
         LOG.infof("Inserindo um usuario: %s", dto.nome());
         Result result = null;
 
@@ -234,7 +234,7 @@ public class UsuarioResource {
     @RolesAllowed({"Administrador"})
     public Response gerarRelatorioPDF() {
         byte[] pdf = service.criarRelatorioUsuarios();
-        ResponseBuilder response = Response.ok(pdf);
+        Response.ResponseBuilder response = Response.ok(pdf);
         response.header("Content-Disposition", "attachment;filename=relatorioUsuariosPetIsco.pdf");
         return response.build();
 

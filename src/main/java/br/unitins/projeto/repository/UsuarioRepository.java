@@ -1,12 +1,9 @@
 package br.unitins.projeto.repository;
 
-import java.util.List;
-
-import io.quarkus.hibernate.orm.panache.PanacheQuery;
-import jakarta.enterprise.context.ApplicationScoped;
-
 import br.unitins.projeto.model.Usuario;
+import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
+import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class UsuarioRepository implements PanacheRepository<Usuario> {
@@ -31,7 +28,7 @@ public class UsuarioRepository implements PanacheRepository<Usuario> {
         if (login == null || senha == null)
             return null;
 
-        return find("login = ?1 AND senha = ?2 ", login, senha).firstResult();
+        return find("login = ?1 AND senha = ?2 AND ativo = true ", login, senha).firstResult();
     }
 
     public Usuario findByLogin(String login) {

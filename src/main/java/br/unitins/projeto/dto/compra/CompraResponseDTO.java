@@ -2,6 +2,7 @@ package br.unitins.projeto.dto.compra;
 
 import br.unitins.projeto.dto.endereco_compra.EnderecoCompraResponseDTO;
 import br.unitins.projeto.dto.item_compra.ItemCompraResponseDTO;
+import br.unitins.projeto.dto.metodo.pagamento.boleto.BoletoResponseDTO;
 import br.unitins.projeto.dto.usuario.cadastro.CadastroAdminDTO;
 import br.unitins.projeto.dto.usuario.cadastro.CadastroAdminResponseDTO;
 import br.unitins.projeto.model.Compra;
@@ -32,7 +33,10 @@ public record CompraResponseDTO(
 
         StatusCompra statusCompra,
 
-        List<ItemCompraResponseDTO> itensCompra
+        List<ItemCompraResponseDTO> itensCompra,
+
+        Boolean sinBoleto,
+        Boolean sinPix
 
 ) {
 
@@ -44,7 +48,9 @@ public record CompraResponseDTO(
                 entity.getTotalCompra(),
                 new EnderecoCompraResponseDTO(entity.getEnderecoCompra()),
                 entity.getStatusCompra(),
-                gerarItemCompraResponseDTO(entity.getItensCompra()));
+                gerarItemCompraResponseDTO(entity.getItensCompra()),
+                entity.getSinBoleto(),
+                entity.getSinPix());
     }
 
     private static List<ItemCompraResponseDTO> gerarItemCompraResponseDTO(List<ItemCompra> list) {
