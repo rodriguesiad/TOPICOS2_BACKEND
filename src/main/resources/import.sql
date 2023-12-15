@@ -58,3 +58,36 @@ INSERT INTO Telefone (dataInclusao, dataAlteracao, codigoArea, numero)
 VALUES ('2023-12-07 09:10:00', '2023-12-07 09:15:00', '63', '912345678');
 
 INSERT INTO usuario_telefone (id_telefone, id_usuario) VALUES (1,1);
+
+INSERT INTO produto(nome, descricao, preco, estoque, peso, nome_imagem, id_raca, id_especie, id_categoria, ativo, porteAnimal)
+VALUES ('Ração Gourmet','Ração GranPlus Gourmet para Cães Adultos de Médio e Grande Porte Sabor Ovelha e Arroz',
+        52, 50, 600, 'racao1.jpg', 1, 2, 2, true, 1);
+
+INSERT INTO produto(nome, descricao, preco, estoque, peso, nome_imagem, id_raca, id_especie, id_categoria, ativo, porteAnimal)
+VALUES ('Refeição Natural','Refeição Natural Zee.Dog Kitchen para Cães Adultos Sabor Carne',
+        105, 60, 1500, 'racao2.jpg', 1, 1, 1, true, 2);
+
+INSERT INTO produto(nome, descricao, preco, estoque, peso, nome_imagem, id_raca, id_especie, id_categoria, ativo, porteAnimal)
+VALUES ('Ração Whiskas','Refeição Whiskas sabor Carne para gatos mimados',
+        40, 60, 100, 'racao3.jpg', 1, 2, 1, true, 1);
+
+INSERT INTO produto(nome, descricao, preco, estoque, peso, nome_imagem, id_raca, id_especie, id_categoria, ativo, porteAnimal)
+VALUES ('Sachê de Carne','Refeição rápida para gatos, sabor frango',
+        15, 2000, 100, 'racao4.jpg', 2, 2, 1, true, 2);
+
+INSERT INTO produto(nome, descricao, preco, estoque, peso, nome_imagem, id_raca, id_especie, id_categoria, ativo, porteAnimal)
+VALUES ('Mix De Sementes','Mix de Sementes de Girassóis, Alpiste e Aveia para Aves',
+        45, 500, 200, 'racao5.jpg', 2, 3, 1, true, 2);
+
+INSERT INTO produto(nome, descricao, preco, estoque, peso, nome_imagem, id_raca, id_especie, id_categoria, ativo, porteAnimal)
+VALUES ('Ração Pedigree','Ração Pedigree para cachorros adultos',
+        105, 30, 1000, 'racao6.jpg', 1, 2, 1, true, 3);
+
+INSERT INTO produto(nome, descricao, preco, estoque, peso, nome_imagem, id_raca, id_especie, id_categoria, ativo, porteAnimal)
+VALUES ('Mistura De Sementes','Mistura de sementes para Calopsita',
+        15, 500, 200, 'racao7.jpg', 3, 3, 1, true, 1);
+
+
+INSERT INTO produto(nome, descricao, preco, estoque, peso, nome_imagem, id_raca, id_especie, id_categoria, ativo, porteAnimal)
+VALUES ('Ração Special Cat','Ração Premium para gatos filhotes',
+        255, 20, 1500, 'racao7.jpg', 2, 3, 2, true, 1);

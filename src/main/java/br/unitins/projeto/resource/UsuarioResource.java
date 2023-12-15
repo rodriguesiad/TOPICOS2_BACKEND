@@ -41,7 +41,7 @@ public class UsuarioResource {
     private static final Logger LOG = Logger.getLogger(UsuarioResource.class);
 
     @GET
-//    @RolesAllowed({"Admin"})
+    @RolesAllowed({"Administrador"})
     public List<UsuarioResponseDTO> getAll() {
         LOG.info("Buscando todos os usuarios.");
         return service.getAll();
@@ -49,13 +49,14 @@ public class UsuarioResource {
 
     @GET
     @Path("/{id}")
-//    @RolesAllowed({"Admin"})
+    @RolesAllowed({"Administrador"})
     public UsuarioResponseDTO findById(@PathParam("id") Long id) {
         LOG.info("Buscando um usuario pelo id.");
         return service.findById(id);
     }
 
     @POST
+    @RolesAllowed({"Administrador", "Comum"})
     public Response insert(@Valid UsuarioDTO dto) {
         LOG.infof("Inserindo um usuario: %s", dto.nome());
         Result result = null;
@@ -78,7 +79,7 @@ public class UsuarioResource {
 
     @DELETE
     @Path("/{id}")
-//    @RolesAllowed({"Admin", "User"})
+    @RolesAllowed({"Administrador", "Comum"})
     public Response delete(@PathParam("id") Long id) {
         LOG.infof("Deletando um usuario: %s", id);
         Result result = null;
@@ -101,7 +102,7 @@ public class UsuarioResource {
 
     @GET
     @Path("/search")
-//    @RolesAllowed({"Admin"})
+    @RolesAllowed({"Administrador"})
     public Response search(@QueryParam("page") int pageNumber,
                            @QueryParam("size") int pageSize,
                            @QueryParam("campoBusca") String campoBusca,
@@ -230,6 +231,7 @@ public class UsuarioResource {
     @GET
     @Path("/relatorio")
     @Produces("application/pdf")
+    @RolesAllowed({"Administrador"})
     public Response gerarRelatorioPDF() {
         byte[] pdf = service.criarRelatorioUsuarios();
         ResponseBuilder response = Response.ok(pdf);

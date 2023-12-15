@@ -64,7 +64,7 @@ public class UsuarioLogadoResource {
     }
 
     @GET
-//    @RolesAllowed({"Admin", "User"})
+    @RolesAllowed({"Administrador", "Comum"})
     public Response getPerfilUsuario() {
 //        String login = jwt.getSubject();
         String login = "maria";
@@ -75,7 +75,7 @@ public class UsuarioLogadoResource {
 
     @GET
     @Path("/dados-pessoais")
-//    @RolesAllowed({"Admin", "User"})
+    @RolesAllowed({"Administrador", "Comum"})
     public Response getDadosPessoais() {
         LOG.info("Buscando dados pessoais do usuario");
         Result result = null;
@@ -98,7 +98,7 @@ public class UsuarioLogadoResource {
 
     @PATCH
     @Path("/dados-pessoais")
-//    @RolesAllowed({"Admin", "User"})
+    @RolesAllowed({"Administrador", "Comum"})
     public Response setDadosPessoais(@Valid DadosPessoaisDTO dto) {
         LOG.infof("Alterando dados pessoais");
         Result result = null;
@@ -121,7 +121,7 @@ public class UsuarioLogadoResource {
 
     @PATCH
     @Path("/alterar-senha")
-//    @RolesAllowed({"Admin", "User"})
+    @RolesAllowed({"Administrador", "Comum"})
     public Response alterarSenha(@Valid SenhaDTO dto) {
         LOG.info("Atualizando senha");
         Result result = null;
@@ -144,7 +144,7 @@ public class UsuarioLogadoResource {
 
     @GET
     @Path("/enderecos")
-//    @RolesAllowed({"Admin", "User"})
+    @RolesAllowed({"Administrador", "Comum"})
     public Response getEnderecos() {
         LOG.info("Buscando endereços");
         Result result = null;
@@ -167,7 +167,7 @@ public class UsuarioLogadoResource {
 
     @PATCH
     @Path("/enderecos/{idEndereco}")
-//    @RolesAllowed({"Admin", "User"})
+    @RolesAllowed({"Administrador", "Comum"})
     public Response updateEnderecos(@PathParam("idEndereco") Long idEndereco, @Valid EnderecoUpdateDTO dto) {
         LOG.info("Alterando endereços");
         Result result = null;
@@ -190,7 +190,7 @@ public class UsuarioLogadoResource {
 
     @DELETE
     @Path("/enderecos/{idEndereco}")
-//    @RolesAllowed({"Admin", "User"})
+    @RolesAllowed({"Administrador", "Comum"})
     public Response deleteEndereco(@PathParam("idEndereco") Long idEndereco) {
         LOG.infof("Deletando um endereço");
         Result result = null;
@@ -213,7 +213,7 @@ public class UsuarioLogadoResource {
 
     @PATCH
     @Path("/enderecos")
-//    @RolesAllowed({"Admin", "User"})
+    @RolesAllowed({"Administrador", "Comum"})
     public Response insertEnderecos(@Valid EnderecoDTO dto) {
         LOG.infof("Inserindo um endereço");
         Result result = null;
@@ -236,7 +236,7 @@ public class UsuarioLogadoResource {
 
     @GET
     @Path("/contatos")
-//    @RolesAllowed({"Admin", "User"})
+    @RolesAllowed({"Administrador", "Comum"})
     public Response getContatos() {
         LOG.info("Buscando contatos");
         Result result = null;
@@ -259,7 +259,7 @@ public class UsuarioLogadoResource {
 
     @PATCH
     @Path("/contatos")
-//    @RolesAllowed({"Admin", "User"})
+    @RolesAllowed({"Administrador", "Comum"})
     public Response alterarContatos(@Valid UsuarioTelefoneDTO dto) {
         LOG.info("Alterando contatos");
         Result result = null;
@@ -282,7 +282,7 @@ public class UsuarioLogadoResource {
 
     @PATCH
     @Path("/imagem")
-//    @RolesAllowed({"Admin", "User"})
+    @RolesAllowed({"Administrador", "Comum"})
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public Response salvarImagem(@MultipartForm ProdutoImageForm form) {
         String nomeImagem = "";
@@ -301,7 +301,7 @@ public class UsuarioLogadoResource {
 
     @GET
     @Path("/download/{nomeImagem}")
-//    @RolesAllowed({"Admin", "User"})
+    @RolesAllowed({"Administrador", "Comum"})
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     public Response download(@PathParam("nomeImagem") String nomeImagem) {
         Response.ResponseBuilder response = Response.ok(fileService.download(nomeImagem, "usuario"));
@@ -312,7 +312,7 @@ public class UsuarioLogadoResource {
 
     @GET
     @Path("/minhas-compras")
-//    @RolesAllowed({"Admin", "User"})
+    @RolesAllowed({"Administrador", "Comum"})
     public Response minhasCompras() {
         LOG.infof("Buscando compras");
         Result result = null;
