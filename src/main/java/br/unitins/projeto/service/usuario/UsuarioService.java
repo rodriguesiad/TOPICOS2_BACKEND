@@ -68,4 +68,6 @@ public interface UsuarioService {
 
     CadastroAdminResponseDTO findByIdPorAdmin(Long id);
 
+    byte[] criarRelatorioUsuarios();
+
 }

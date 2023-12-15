@@ -11,11 +11,13 @@ import br.unitins.projeto.dto.usuario.cadastro.CadastroAdminDTO;
 import br.unitins.projeto.dto.usuario.cadastro.CadastroAdminResponseDTO;
 import br.unitins.projeto.model.Perfil;
 import br.unitins.projeto.service.usuario.UsuarioService;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
@@ -25,6 +27,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.ResponseBuilder;
 import jakarta.ws.rs.core.Response.Status;
 
 @Path("/usuarios")
@@ -222,6 +225,17 @@ public class UsuarioResource {
     @Path("/perfis")
     public Response getPerfis(){
         return Response.ok(Perfil.values()).build();
+    }
+
+    @GET
+    @Path("/relatorio")
+    @Produces("application/pdf")
+    public Response gerarRelatorioPDF() {
+        byte[] pdf = service.criarRelatorioUsuarios();
+        ResponseBuilder response = Response.ok(pdf);
+        response.header("Content-Disposition", "attachment;filename=relatorioUsuariosPetIsco.pdf");
+        return response.build();
+
     }
 
 }

@@ -10,6 +10,7 @@ import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PATCH;
 import jakarta.ws.rs.POST;
@@ -20,6 +21,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.ResponseBuilder;
 import jakarta.ws.rs.core.Response.Status;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
@@ -221,6 +223,17 @@ public class ProdutoResource {
             Result result = new Result(e.getMessage());
             return Response.status(Status.CONFLICT).entity(result).build();
         }
+    }
+
+    @GET
+    @Path("/relatorio")
+    @Produces("application/pdf")
+    public Response gerarRelatorioPDF() {
+        byte[] pdf = service.criarRelatorioProduto();
+        ResponseBuilder response = Response.ok(pdf);
+        response.header("Content-Disposition", "attachment;filename=relatorioProdutosPetIsco.pdf");
+        return response.build();
+
     }
 
 }

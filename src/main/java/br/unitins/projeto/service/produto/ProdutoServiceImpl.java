@@ -7,6 +7,7 @@ import br.unitins.projeto.model.PorteAnimal;
 import br.unitins.projeto.model.Produto;
 import br.unitins.projeto.repository.CategoriaRepository;
 import br.unitins.projeto.repository.EspecieRepository;
+import br.unitins.projeto.repository.ItemCompraRepository;
 import br.unitins.projeto.repository.ProdutoRepository;
 import br.unitins.projeto.repository.RacaRepository;
 import br.unitins.projeto.service.file.FileService;
@@ -21,9 +22,26 @@ import jakarta.ws.rs.NotFoundException;
 
 import java.io.IOException;
 import java.io.NotActiveException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import com.itextpdf.io.source.ByteArrayOutputStream;
+import com.itextpdf.kernel.events.Event;
+import com.itextpdf.kernel.events.IEventHandler;
+import com.itextpdf.kernel.events.PdfDocumentEvent;
+import com.itextpdf.kernel.geom.PageSize;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfPage;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.kernel.pdf.canvas.PdfCanvas;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.properties.TextAlignment;
+import com.itextpdf.layout.properties.UnitValue;
 
 @ApplicationScoped
 public class ProdutoServiceImpl implements ProdutoService {
@@ -39,6 +57,9 @@ public class ProdutoServiceImpl implements ProdutoService {
 
     @Inject
     CategoriaRepository categoriaRepository;
+
+    @Inject
+    ItemCompraRepository itemCompraRepository;
 
     @Inject
     Validator validator;
@@ -178,4 +199,99 @@ public class ProdutoServiceImpl implements ProdutoService {
                 .stream().map(ProdutoResponseDTO::new).collect(Collectors.toList());
     }
 
+    @Override
+    public byte[] criarRelatorioProduto() {
+
+        List<Produto> lista = repository.findAll().list();
+        return gerarRelatorioPDF(lista);
+    }
+
+    private byte[] gerarRelatorioPDF(List<Produto> produtos){
+
+         // Crie um ByteArrayOutputStream para armazenar o PDF resultante
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        // Crie um documento PDF usando o iText7
+        try (PdfDocument pdfDocument = new PdfDocument(new PdfWriter(baos))) {
+            
+            Document document = new Document(pdfDocument, PageSize.A4);
+            pdfDocument.addEventHandler(PdfDocumentEvent.END_PAGE, new HeaderFooterHandler());
+
+            // Adicione um cabeçalho ao PDF
+            // Image logo = new Image(ImageDataFactory.create("caminho/para/sua/logo.png"));
+            // document.add(logo);
+
+
+            // Adicione um título e um subtítulo
+            Paragraph titulo = new Paragraph("Relatório de Produtos")
+                    .setTextAlignment(TextAlignment.CENTER)
+                    .setFontSize(22);
+                
+            String dataHora = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm"));
+            Paragraph subtitulo = new Paragraph("Gerado em: " + dataHora)
+                    .setTextAlignment(TextAlignment.CENTER)
+                    .setFontSize(12);
+            document.add(titulo);
+            document.add(subtitulo);
+
+            // Adicione a tabela com os itens
+            Table tabela = new Table(new float[]{1, 1, 1, 1, 1})
+                    .setWidth(UnitValue.createPercentValue(100))
+                    .setMarginTop(10);
+            tabela.addHeaderCell("ID");
+            tabela.addHeaderCell("Nome");
+            tabela.addHeaderCell("Preço");
+            tabela.addHeaderCell("Vendas");
+            tabela.addHeaderCell("Total");
+
+
+
+            for (Produto produto : produtos) {
+                int vendas = 0;
+                
+                if (itemCompraRepository.findByProduto(produto.getId()).size() == 0) {
+                    vendas = 0;
+                }
+                else{
+                    vendas =  itemCompraRepository.findByProduto(produto.getId()).size() ;
+                }
+                
+                double lucro = vendas * produto.getPreco();
+                
+                tabela.addCell(String.valueOf(produto.getId()));
+                tabela.addCell(produto.getNome());
+                tabela.addCell(String.valueOf(produto.getPreco()));
+                tabela.addCell(String.valueOf(vendas));
+                tabela.addCell(String.valueOf(lucro)+ " reais");
+            }
+
+            document.add(tabela);
+
+            document.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return baos.toByteArray();
+    }
+
+    class HeaderFooterHandler implements IEventHandler {
+        public void handleEvent(Event event) {
+            PdfDocumentEvent docEvent = (PdfDocumentEvent) event;
+            PdfDocument pdf = docEvent.getDocument();
+            PdfPage page = docEvent.getPage();
+            int pageNum = pdf.getPageNumber(page);
+
+            PdfCanvas canvas = new PdfCanvas(page.newContentStreamBefore(), page.getResources(), pdf);
+            canvas.beginText().setFontAndSize(pdf.getDefaultFont(), 12);
+            
+            canvas.moveText(34, 20).showText("Página "+ pageNum);
+
+            String dataHora = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy - hh:mm:ss"));
+            canvas.moveText(500 - 80, 0).showText(dataHora);
+
+            canvas.endText();
+                  
+        }
+    }
 }

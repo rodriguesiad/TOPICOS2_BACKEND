@@ -27,8 +27,6 @@ public class UsuarioRepository implements PanacheRepository<Usuario> {
         return null;
     }
 
-
-
     public Usuario findByLoginAndSenha(String login, String senha) {
         if (login == null || senha == null)
             return null;
