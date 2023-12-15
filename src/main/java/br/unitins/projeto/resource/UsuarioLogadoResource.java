@@ -64,10 +64,9 @@ public class UsuarioLogadoResource {
     }
 
     @GET
-//    @RolesAllowed({"Admin", "User"})
+    @RolesAllowed({"Administrador", "Comum"})
     public Response getPerfilUsuario() {
-//        String login = jwt.getSubject();
-        String login = "maria";
+        String login = jwt.getSubject();
         UsuarioResponseDTO usuario = service.findByLogin(login);
         LOG.info("Buscando perfis do usuário logado.");
         return Response.ok(usuario).build();

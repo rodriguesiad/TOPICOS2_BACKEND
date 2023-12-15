@@ -33,7 +33,9 @@ public interface CompraService {
 
     PixResponseDTO pagarPorPix(Long idCompra);
 
-    Response getMetodoPagamento(Long idCompra);
+    BoletoResponseDTO getBoleto(Long idCompra);
+
+    PixResponseDTO getPix(Long idCompra);
 
     List<CompraResponseDTO> findAllByUsuario(Long idUsuario, int pageNumber, int pageSize);
 

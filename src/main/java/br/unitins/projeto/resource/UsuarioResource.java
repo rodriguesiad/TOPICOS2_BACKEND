@@ -2,6 +2,7 @@ package br.unitins.projeto.resource;
 
 import java.util.List;
 
+import br.unitins.projeto.dto.usuario.cadastro.CadastroDTO;
 import org.jboss.logging.Logger;
 
 import br.unitins.projeto.application.Result;
@@ -53,24 +54,11 @@ public class UsuarioResource {
     }
 
     @POST
-    public Response insert(@Valid UsuarioDTO dto) {
+    public Response insert(@Valid CadastroDTO dto) {
         LOG.infof("Inserindo um usuario: %s", dto.nome());
-        Result result = null;
-
-        try {
-            UsuarioResponseDTO response = service.create(dto);
-            LOG.infof("Usuario (%d) criado com sucesso.", response.id());
-            return Response.status(Status.CREATED).entity(response).build();
-        } catch (ConstraintViolationException e) {
-            LOG.error("Erro ao incluir um usuario.");
-            LOG.debug(e.getMessage());
-            result = new Result(e.getConstraintViolations());
-        } catch (Exception e) {
-            LOG.fatal("Erro sem identificacao: " + e.getMessage());
-            result = new Result(e.getMessage(), false);
-        }
-
-        return Response.status(Status.NOT_FOUND).entity(result).build();
+        UsuarioResponseDTO response = service.create(dto);
+        LOG.infof("Usuario (%d) criado com sucesso.", response.id());
+        return Response.status(Status.CREATED).entity(response).build();
     }
 
     @DELETE

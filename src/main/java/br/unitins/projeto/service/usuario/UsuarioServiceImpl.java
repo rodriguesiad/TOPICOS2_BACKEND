@@ -1,11 +1,5 @@
 package br.unitins.projeto.service.usuario;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import br.unitins.projeto.dto.endereco.EnderecoDTO;
 import br.unitins.projeto.dto.endereco.EnderecoResponseDTO;
 import br.unitins.projeto.dto.endereco.EnderecoUpdateDTO;
@@ -13,6 +7,7 @@ import br.unitins.projeto.dto.usuario.UsuarioDTO;
 import br.unitins.projeto.dto.usuario.UsuarioResponseDTO;
 import br.unitins.projeto.dto.usuario.cadastro.CadastroAdminDTO;
 import br.unitins.projeto.dto.usuario.cadastro.CadastroAdminResponseDTO;
+import br.unitins.projeto.dto.usuario.cadastro.CadastroDTO;
 import br.unitins.projeto.dto.usuario.dados_pessoais.DadosPessoaisDTO;
 import br.unitins.projeto.dto.usuario.dados_pessoais.DadosPessoaisResponseDTO;
 import br.unitins.projeto.dto.usuario.enderecos.UsuarioEnderecoResponseDTO;
@@ -40,6 +35,12 @@ import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import jakarta.validation.Validator;
 import jakarta.ws.rs.NotFoundException;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class UsuarioServiceImpl implements UsuarioService {
@@ -77,7 +78,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     @Transactional
-    public UsuarioResponseDTO create(@Valid UsuarioDTO usuarioDTO) throws ConstraintViolationException {
+    public UsuarioResponseDTO create(@Valid CadastroDTO usuarioDTO) throws ConstraintViolationException {
 
         Usuario entity = new Usuario();
         PessoaFisica pessoa = new PessoaFisica();
@@ -87,18 +88,17 @@ public class UsuarioServiceImpl implements UsuarioService {
         pessoa.setCpf(usuarioDTO.cpf());
         pessoa.setDataNascimento(usuarioDTO.dataNascimento());
 
-        entity.setLogin(usuarioDTO.login());
+        entity.setLogin(usuarioDTO.email());
         entity.setSenha(hashService.getHashSenha(usuarioDTO.senha()));
+        entity.setAtivo(true);
 
-        if (usuarioDTO.telefones() != null) {
-            List<Telefone> telefonesModel = usuarioDTO.telefones().stream().map(telefoneDTO -> {
-                return telefoneService.toModel(telefoneDTO);
+        if (usuarioDTO.enderecos() != null) {
+            List<Endereco> enderecosModel = usuarioDTO.enderecos().stream().map(enderecoDTO -> {
+                return enderecoService.toModel(enderecoDTO);
             }).collect(Collectors.toList());
 
-            entity.setListaTelefone(telefonesModel);
+            entity.setListaEndereco(enderecosModel);
         }
-
-        entity.setAtivo(true);
         entity.setPessoaFisica(pessoa);
 
         List<Perfil> perfis = new ArrayList<>();
@@ -128,7 +128,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     public List<CadastroAdminResponseDTO> findByCampoBusca(String campoBusca, String situacao, int pageNumber, int pageSize) {
         Boolean ativo = null;
 
-        if (situacao.equals("Inativo")){
+        if (situacao.equals("Inativo")) {
             ativo = false;
         } else if (situacao.equals("Ativo")) {
             ativo = true;
@@ -148,7 +148,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     public Long countByCampoBusca(String campoBusca, String situacao) {
         Boolean ativo = null;
 
-        if (situacao.equals("Inativo")){
+        if (situacao.equals("Inativo")) {
             ativo = false;
         } else if (situacao.equals("Ativo")) {
             ativo = true;
@@ -339,7 +339,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         entity.setLogin(dto.email());
         entity.setSenha(hashService.getHashSenha(dto.senha()));
 
-        if (dto.telefones() != null){
+        if (dto.telefones() != null) {
             List<Telefone> telefonesModel = dto.telefones().stream().map(telefoneDTO -> {
                 return telefoneService.toModel(telefoneDTO);
             }).collect(Collectors.toList());
@@ -353,8 +353,8 @@ public class UsuarioServiceImpl implements UsuarioService {
         List<Perfil> perfis = new ArrayList<>();
 
         if (dto.perfis() != null) {
-            for (Integer idPerfil : dto.perfis() ){
-                if (!Perfil.valueOf(idPerfil).equals(Perfil.COMUM)){
+            for (Integer idPerfil : dto.perfis()) {
+                if (!Perfil.valueOf(idPerfil).equals(Perfil.COMUM)) {
                     perfis.add(Perfil.valueOf(idPerfil));
                 }
             }
@@ -377,7 +377,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
         Usuario entity = repository.findById(id);
 
-        if(entity != null){
+        if (entity != null) {
             PessoaFisica pessoa = entity.getPessoaFisica();
 
             pessoa.setNome(dto.nome());
@@ -387,11 +387,11 @@ public class UsuarioServiceImpl implements UsuarioService {
 
             entity.setLogin(dto.email());
 
-            if(!dto.senha().equals(entity.getSenha())){
+            if (!dto.senha().equals(entity.getSenha())) {
                 entity.setSenha(hashService.getHashSenha(dto.senha()));
             }
 
-            if (dto.telefones() != null){
+            if (dto.telefones() != null) {
                 List<Telefone> telefonesModel = dto.telefones().stream().map(telefoneDTO -> {
                     return telefoneService.toModel(telefoneDTO);
                 }).collect(Collectors.toList());
@@ -405,8 +405,8 @@ public class UsuarioServiceImpl implements UsuarioService {
             List<Perfil> perfis = new ArrayList<>();
 
             if (dto.perfis() != null) {
-                for (Integer idPerfil : dto.perfis() ){
-                    if (!Perfil.valueOf(idPerfil).equals(Perfil.COMUM)){
+                for (Integer idPerfil : dto.perfis()) {
+                    if (!Perfil.valueOf(idPerfil).equals(Perfil.COMUM)) {
                         perfis.add(Perfil.valueOf(idPerfil));
                     }
                 }

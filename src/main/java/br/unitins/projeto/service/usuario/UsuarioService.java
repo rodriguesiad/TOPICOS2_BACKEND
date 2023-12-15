@@ -7,6 +7,7 @@ import br.unitins.projeto.dto.usuario.UsuarioDTO;
 import br.unitins.projeto.dto.usuario.UsuarioResponseDTO;
 import br.unitins.projeto.dto.usuario.cadastro.CadastroAdminDTO;
 import br.unitins.projeto.dto.usuario.cadastro.CadastroAdminResponseDTO;
+import br.unitins.projeto.dto.usuario.cadastro.CadastroDTO;
 import br.unitins.projeto.dto.usuario.dados_pessoais.DadosPessoaisDTO;
 import br.unitins.projeto.dto.usuario.dados_pessoais.DadosPessoaisResponseDTO;
 import br.unitins.projeto.dto.usuario.enderecos.UsuarioEnderecoResponseDTO;
@@ -24,7 +25,7 @@ public interface UsuarioService {
 
     UsuarioResponseDTO findById(Long id);
 
-    UsuarioResponseDTO create(@Valid UsuarioDTO productDTO);
+    UsuarioResponseDTO create(@Valid CadastroDTO productDTO);
 
     void delete(Long id);
 
