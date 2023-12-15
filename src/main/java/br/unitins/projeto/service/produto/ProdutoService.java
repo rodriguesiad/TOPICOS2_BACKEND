@@ -34,4 +34,6 @@ public interface ProdutoService {
 
     void salvarImagens(ProdutoImageForm imagens) throws IOException;
 
+    byte[] criarRelatorioProduto();
+
 }

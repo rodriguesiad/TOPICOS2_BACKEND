@@ -6,10 +6,12 @@ import br.unitins.projeto.dto.produto.ProdutoResponseDTO;
 import br.unitins.projeto.form.ProdutoImageForm;
 import br.unitins.projeto.service.file.FileService;
 import br.unitins.projeto.service.produto.ProdutoService;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PATCH;
 import jakarta.ws.rs.POST;
@@ -20,6 +22,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.ResponseBuilder;
 import jakarta.ws.rs.core.Response.Status;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
@@ -64,7 +67,7 @@ public class ProdutoResource {
 
 
     @POST
-//    @RolesAllowed({"Admin"})
+    @RolesAllowed({"Administrador"})
     public Response insert(ProdutoDTO dto) {
         LOG.infof("Inserindo um produtos: %s", dto.nome());
         Result result = null;
@@ -87,7 +90,7 @@ public class ProdutoResource {
 
     @PUT
     @Path("/{id}")
-//    @RolesAllowed({"Admin"})
+    @RolesAllowed({"Administrador"})
     public Response update(@PathParam("id") Long id, ProdutoDTO dto) {
         LOG.infof("Alterando um produtos: %s", dto.nome());
         Result result = null;
@@ -110,7 +113,7 @@ public class ProdutoResource {
 
     @DELETE
     @Path("/{id}")
-//    @RolesAllowed({"Admin"})
+    @RolesAllowed({"Administrador"})
     public Response delete(@PathParam("id") Long id) {
         LOG.infof("Deletando um produtos: %s", id);
         Result result = null;
@@ -133,7 +136,7 @@ public class ProdutoResource {
 
     @PUT
     @Path("/situacao/{id}")
-//    @RolesAllowed({"Admin"})
+    @RolesAllowed({"Administrador"})
     public Response alterarSituacao(@PathParam("id") Long id, Boolean dto) {
         LOG.infof("Alterando situação do produto");
         Result result = null;
@@ -156,6 +159,7 @@ public class ProdutoResource {
 
     @GET
     @Path("/search")
+    @RolesAllowed({"Administrador", "Comum"})
     public Response search(@QueryParam("page") int pageNumber,
                            @QueryParam("size") int pageSize,
                            @QueryParam("nome") String nome,
@@ -203,6 +207,7 @@ public class ProdutoResource {
 
     @GET
     @Path("/image/download/{nomeImagem}")
+    @RolesAllowed({"Administrador", "Comum"})
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     public Response download(@PathParam("nomeImagem") String nomeImagem) {
         Response.ResponseBuilder response = Response.ok(fileService.download(nomeImagem, "produto"));
@@ -212,6 +217,7 @@ public class ProdutoResource {
 
     @PATCH
     @Path("/image/upload")
+    @RolesAllowed({"Administrador"})
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public Response salvarImagem(@MultipartForm ProdutoImageForm form){
         try {
@@ -221,6 +227,18 @@ public class ProdutoResource {
             Result result = new Result(e.getMessage());
             return Response.status(Status.CONFLICT).entity(result).build();
         }
+    }
+
+    @GET
+    @Path("/relatorio")
+    @RolesAllowed({"Administrador"})
+    @Produces("application/pdf")
+    public Response gerarRelatorioPDF() {
+        byte[] pdf = service.criarRelatorioProduto();
+        ResponseBuilder response = Response.ok(pdf);
+        response.header("Content-Disposition", "attachment;filename=relatorioProdutosPetIsco.pdf");
+        return response.build();
+
     }
 
 }

@@ -69,8 +69,6 @@ public interface UsuarioService {
 
     CadastroAdminResponseDTO findByIdPorAdmin(Long id);
 
-    Integer getIconProfile(Long id);
-
-    void setIconProfile(Long idUsuario, Integer newIcon);
+    byte[] criarRelatorioUsuarios();
 
 }

@@ -11,6 +11,7 @@ import br.unitins.projeto.dto.usuario.UsuarioResponseDTO;
 import br.unitins.projeto.model.StatusCompra;
 import br.unitins.projeto.service.compra.CompraService;
 import br.unitins.projeto.service.usuario.UsuarioService;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
@@ -62,13 +63,14 @@ public class CompraResource {
 
     @GET
     @Path("/{id}")
+    @RolesAllowed({"Administrador", "Comum"})
     public CompraResponseDTO findById(@PathParam("id") Long id) {
         LOG.info("Buscando uma compra pelo id.");
         return service.findById(id);
     }
 
     @POST
-////    @RolesAllowed({ "Admin", "User" })
+    @RolesAllowed({"Administrador", "Comum"})
     public Response insert(@Valid CompraDTO dto) {
         LOG.info("Inserindo uma compra");
         CompraResponseDTO response = service.create(dto, getIdUsuario());
@@ -77,7 +79,7 @@ public class CompraResource {
     }
 
     @PATCH
-////    @RolesAllowed({ "Admin", "User" })
+    @RolesAllowed({"Administrador", "Comum"})
     @Path("/{idCompra}/alterar-status")
     public Response alterStatus(@PathParam("idCompra") Long id, @Valid StatusCompraDTO dto) {
         LOG.info("Alterando status de uma compra");
@@ -87,7 +89,7 @@ public class CompraResource {
     }
 
     @GET
-//    @RolesAllowed({ "Admin", "User" })
+    @RolesAllowed({"Administrador", "Comum"})
     @Path("/{idCompra}/historico-entrega")
     public Response getHistoricoEntrega(@PathParam("idCompra") Long id) {
         LOG.infof("Buscando historíco entrega de uma compra: %s", id);
@@ -97,7 +99,7 @@ public class CompraResource {
     }
 
     @PATCH
-//    @RolesAllowed({ "Admin", "User" })
+    @RolesAllowed({"Administrador", "Comum"})
     @Path("/{idCompra}/historico-entrega")
     public Response insertHistoricoEntrega(@PathParam("idCompra") Long id, @Valid HistoricoEntregaDTO dto) {
         LOG.infof("Inserindo historico de entrega: %s", id);
@@ -107,7 +109,7 @@ public class CompraResource {
     }
 
     @PATCH
-//    @RolesAllowed({"Admin", "User"})
+    @RolesAllowed({"Administrador", "Comum"})
     @Path("/{idCompra}/pagamento/boleto")
     public Response pagarBoleto(@PathParam("idCompra") Long id) {
         LOG.info("Realizando pagamento por boleto");
@@ -117,7 +119,7 @@ public class CompraResource {
     }
 
     @PATCH
-//    @RolesAllowed({"Admin", "User"})
+    @RolesAllowed({"Administrador", "Comum"})
     @Path("/{idCompra}/pagamento/pix")
     public Response pagarPix(@PathParam("idCompra") Long id) {
         LOG.info("Realizando pagamento por pix");
@@ -128,9 +130,9 @@ public class CompraResource {
 
 
     @GET
-//    @RolesAllowed({"Admin", "User"})
-    @Path("/{idCompra}/pagamento/boleto")
-    public Response getMetodoDePagamentoBoleto(@PathParam("idCompra") Long id) {
+    @RolesAllowed({"Administrador", "Comum"})
+    @Path("/{idCompra}/pagamento")
+    public Response getMetodoDePagamento(@PathParam("idCompra") Long id) {
         LOG.info("Consultando método de pagamento");
         BoletoResponseDTO response = service.getBoleto(id);
         return Response.ok().entity(response).build();

@@ -12,11 +12,13 @@ import br.unitins.projeto.dto.usuario.cadastro.CadastroAdminDTO;
 import br.unitins.projeto.dto.usuario.cadastro.CadastroAdminResponseDTO;
 import br.unitins.projeto.model.Perfil;
 import br.unitins.projeto.service.usuario.UsuarioService;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
@@ -47,23 +49,37 @@ public class UsuarioResource {
 
     @GET
     @Path("/{id}")
-//    @RolesAllowed({"Admin"})
+    @RolesAllowed({"Administrador"})
     public UsuarioResponseDTO findById(@PathParam("id") Long id) {
         LOG.info("Buscando um usuario pelo id.");
         return service.findById(id);
     }
 
     @POST
+    @RolesAllowed({"Administrador", "Comum"})
     public Response insert(@Valid CadastroDTO dto) {
         LOG.infof("Inserindo um usuario: %s", dto.nome());
-        UsuarioResponseDTO response = service.create(dto);
-        LOG.infof("Usuario (%d) criado com sucesso.", response.id());
-        return Response.status(Status.CREATED).entity(response).build();
+        Result result = null;
+
+        try {
+            UsuarioResponseDTO response = service.create(dto);
+            LOG.infof("Usuario (%d) criado com sucesso.", response.id());
+            return Response.status(Status.CREATED).entity(response).build();
+        } catch (ConstraintViolationException e) {
+            LOG.error("Erro ao incluir um usuario.");
+            LOG.debug(e.getMessage());
+            result = new Result(e.getConstraintViolations());
+        } catch (Exception e) {
+            LOG.fatal("Erro sem identificacao: " + e.getMessage());
+            result = new Result(e.getMessage(), false);
+        }
+
+        return Response.status(Status.NOT_FOUND).entity(result).build();
     }
 
     @DELETE
     @Path("/{id}")
-//    @RolesAllowed({"Admin", "User"})
+    @RolesAllowed({"Administrador", "Comum"})
     public Response delete(@PathParam("id") Long id) {
         LOG.infof("Deletando um usuario: %s", id);
         Result result = null;
@@ -86,7 +102,7 @@ public class UsuarioResource {
 
     @GET
     @Path("/search")
-//    @RolesAllowed({"Admin"})
+    @RolesAllowed({"Administrador"})
     public Response search(@QueryParam("page") int pageNumber,
                            @QueryParam("size") int pageSize,
                            @QueryParam("campoBusca") String campoBusca,
@@ -210,6 +226,18 @@ public class UsuarioResource {
     @Path("/perfis")
     public Response getPerfis(){
         return Response.ok(Perfil.values()).build();
+    }
+
+    @GET
+    @Path("/relatorio")
+    @Produces("application/pdf")
+    @RolesAllowed({"Administrador"})
+    public Response gerarRelatorioPDF() {
+        byte[] pdf = service.criarRelatorioUsuarios();
+        Response.ResponseBuilder response = Response.ok(pdf);
+        response.header("Content-Disposition", "attachment;filename=relatorioUsuariosPetIsco.pdf");
+        return response.build();
+
     }
 
 }

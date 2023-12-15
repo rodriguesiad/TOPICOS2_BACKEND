@@ -1,5 +1,28 @@
 package br.unitins.projeto.service.usuario;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import com.itextpdf.io.source.ByteArrayOutputStream;
+import com.itextpdf.kernel.events.Event;
+import com.itextpdf.kernel.events.IEventHandler;
+import com.itextpdf.kernel.events.PdfDocumentEvent;
+import com.itextpdf.kernel.geom.PageSize;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfPage;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.kernel.pdf.canvas.PdfCanvas;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.properties.TextAlignment;
+import com.itextpdf.layout.properties.UnitValue;
+
 import br.unitins.projeto.dto.endereco.EnderecoDTO;
 import br.unitins.projeto.dto.endereco.EnderecoResponseDTO;
 import br.unitins.projeto.dto.endereco.EnderecoUpdateDTO;
@@ -18,8 +41,10 @@ import br.unitins.projeto.model.DefaultEntity;
 import br.unitins.projeto.model.Endereco;
 import br.unitins.projeto.model.Perfil;
 import br.unitins.projeto.model.PessoaFisica;
+import br.unitins.projeto.model.Produto;
 import br.unitins.projeto.model.Telefone;
 import br.unitins.projeto.model.Usuario;
+import br.unitins.projeto.repository.CompraRepository;
 import br.unitins.projeto.repository.ProdutoRepository;
 import br.unitins.projeto.repository.UsuarioRepository;
 import br.unitins.projeto.service.endereco.EnderecoService;
@@ -35,12 +60,6 @@ import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import jakarta.validation.Validator;
 import jakarta.ws.rs.NotFoundException;
-
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class UsuarioServiceImpl implements UsuarioService {
@@ -62,6 +81,9 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Inject
     ProdutoRepository produtoRepository;
+
+    @Inject
+    CompraRepository compraRepository;
 
     @Override
     public List<UsuarioResponseDTO> getAll() {
@@ -465,66 +487,6 @@ public class UsuarioServiceImpl implements UsuarioService {
         return CadastroAdminResponseDTO.valueOf(usuario);
     }
 
-    public Integer getIconProfile(Long idUsuario) {
-        Usuario usuario = repository.findById(idUsuario);
-
-        if (usuario == null)
-            throw new NotFoundException("Usuário não encontrado.");
-
-        return usuario.getIconProfile();
-    }
-
-    @Transactional
-    public void setIconProfile(Long idUsuario, Integer newIcon) {
-        Usuario usuario = repository.findById(idUsuario);
-
-        if (usuario == null)
-            throw new NotFoundException("Usuário não encontrado.");
-
-        usuario.setIconProfile(newIcon);
-    }
-
-//    @Override
-//    public UsuarioListaDesejoResponseDTO getListaDesejo(Long id) {
-//        Usuario usuario = getUsuario(id);
-//        return UsuarioListaDesejoResponseDTO.valueOf(usuario);
-//    }
-//
-//    @Override
-//    @Transactional
-//    public UsuarioListaDesejoResponseDTO insertProdutoListaDesejo(Long id, @Valid ListaDesejoDTO dto) {
-//        Usuario usuario = getUsuario(id);
-//        Produto produto = produtoRepository.findById(dto.idProduto());
-//
-//        if (usuario.getListaDesejo().isEmpty()) {
-//            usuario.setListaDesejo(new ArrayList<>());
-//        }
-//
-//        usuario.getListaDesejo().add(produto);
-//
-//        return UsuarioListaDesejoResponseDTO.valueOf(usuario);
-//    }
-
-//    @Override
-//    @Transactional
-//    public void deleteItemListaDesejo(Long id, Long idProduto) {
-//        Usuario usuario = getUsuario(id);
-//        Produto produto = produtoRepository.findById(idProduto);
-//
-//        if (usuario.getListaDesejo().isEmpty()) {
-//            throw new NotFoundException("O usuário não possuiu produtos na lista de desejo.");
-//        }
-//
-//        int index = usuario.getListaDesejo().stream()
-//                .map(DefaultEntity::getId)
-//                .toList().indexOf(idProduto);
-//
-//        if (index == -1)
-//            throw new NotFoundException("Produto não encontrado na lista de desejo");
-//
-//        usuario.getListaDesejo().remove(idProduto);
-//    }
-
     private Usuario getUsuario(Long id) {
         Usuario usuario = repository.findById(id);
 
@@ -534,4 +496,93 @@ public class UsuarioServiceImpl implements UsuarioService {
         return usuario;
     }
 
+    @Override
+    public byte[] criarRelatorioUsuarios() {
+
+        List<Usuario> lista = repository.findAll().list();
+        return gerarRelatorioPDF(lista);
+    }
+
+    private byte[] gerarRelatorioPDF(List<Usuario> usuarios){
+
+         // Crie um ByteArrayOutputStream para armazenar o PDF resultante
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        // Crie um documento PDF usando o iText7
+        try (PdfDocument pdfDocument = new PdfDocument(new PdfWriter(baos))) {
+
+            Document document = new Document(pdfDocument, PageSize.A4);
+            pdfDocument.addEventHandler(PdfDocumentEvent.END_PAGE, new HeaderFooterHandler());
+
+            // Adicione um cabeçalho ao PDF
+            // Image logo = new Image(ImageDataFactory.create("caminho/para/sua/logo.png"));
+            // document.add(logo);
+
+
+            // Adicione um título e um subtítulo
+            Paragraph titulo = new Paragraph("Relatório de Usuários")
+                    .setTextAlignment(TextAlignment.CENTER)
+                    .setFontSize(22);
+
+            String dataHora = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm"));
+            Paragraph subtitulo = new Paragraph("Gerado em: " + dataHora)
+                    .setTextAlignment(TextAlignment.CENTER)
+                    .setFontSize(12);
+            document.add(titulo);
+            document.add(subtitulo);
+
+            // Adicione a tabela com os itens
+            Table tabela = new Table(new float[]{1, 2, 1, 1})
+                    .setWidth(UnitValue.createPercentValue(100))
+                    .setMarginTop(10);
+            tabela.addHeaderCell("ID");
+            tabela.addHeaderCell("Nome");
+            tabela.addHeaderCell("Ativo");
+            tabela.addHeaderCell("Compras");
+
+            for (Usuario usuario : usuarios) {
+
+            tabela.addCell(String.valueOf(usuario.getId()));
+            tabela.addCell(usuario.getPessoaFisica().getNome());
+
+            if (usuario.getAtivo()==false) {
+                tabela.addCell("Não");
+            }
+            else{
+                tabela.addCell("Sim");
+            }
+
+            int numeroCompras = (int) compraRepository.findByUsuario(usuario.getId()).count();
+            tabela.addCell(String.valueOf(numeroCompras));
+            }
+
+            document.add(tabela);
+
+            document.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return baos.toByteArray();
+    }
+
+    class HeaderFooterHandler implements IEventHandler {
+        public void handleEvent(Event event) {
+            PdfDocumentEvent docEvent = (PdfDocumentEvent) event;
+            PdfDocument pdf = docEvent.getDocument();
+            PdfPage page = docEvent.getPage();
+            int pageNum = pdf.getPageNumber(page);
+
+            PdfCanvas canvas = new PdfCanvas(page.newContentStreamBefore(), page.getResources(), pdf);
+            canvas.beginText().setFontAndSize(pdf.getDefaultFont(), 12);
+
+            canvas.moveText(34, 20).showText("Página "+ pageNum);
+
+            String dataHora = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy - hh:mm:ss"));
+            canvas.moveText(500 - 80, 0).showText(dataHora);
+
+            canvas.endText();
+
+        }
+    }
 }

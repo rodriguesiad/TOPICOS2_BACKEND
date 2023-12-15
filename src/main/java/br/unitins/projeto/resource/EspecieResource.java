@@ -4,6 +4,7 @@ import br.unitins.projeto.application.Result;
 import br.unitins.projeto.dto.especie.EspecieDTO;
 import br.unitins.projeto.dto.especie.EspecieResponseDTO;
 import br.unitins.projeto.service.especie.EspecieService;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.ws.rs.Consumes;
@@ -61,7 +62,7 @@ public class EspecieResource {
     }
 
     @POST
-//    @RolesAllowed({"Admin"})
+    @RolesAllowed({"Administrador"})
     public Response insert(EspecieDTO dto) {
         LOG.infof("Inserindo um especies: %s", dto.nome());
 
@@ -72,7 +73,7 @@ public class EspecieResource {
 
     @PUT
     @Path("/{id}")
-//    @RolesAllowed({"Admin"})
+    @RolesAllowed({"Administrador"})
     public Response update(@PathParam("id") Long id, EspecieDTO dto) {
         LOG.infof("Alterando um especies: %s", dto.nome());
         Result result = null;
@@ -95,7 +96,7 @@ public class EspecieResource {
 
     @PUT
     @Path("/situacao/{id}")
-//    @RolesAllowed({"Admin"})
+    @RolesAllowed({"Administrador"})
     public Response alterarSituacao(@PathParam("id") Long id, Boolean dto) {
         LOG.infof("Alterando situação da espécie");
         Result result = null;
@@ -118,7 +119,7 @@ public class EspecieResource {
 
     @DELETE
     @Path("/{id}")
-//    @RolesAllowed({"Admin"})
+    @RolesAllowed({"Administrador"})
     public Response delete(@PathParam("id") Long id) {
         LOG.infof("Deletando um especies: %s", id);
         Result result = null;
@@ -141,6 +142,7 @@ public class EspecieResource {
 
     @GET
     @Path("/search")
+    @RolesAllowed({"Administrador", "Comum"})
     public Response search(@QueryParam("page") int pageNumber,
                            @QueryParam("size") int pageSize,
                            @QueryParam("nome") String nome,
