@@ -7,10 +7,7 @@ import br.unitins.projeto.dto.historico_entrega.HistoricoEntregaDTO;
 import br.unitins.projeto.dto.historico_entrega.HistoricoEntregaResponseDTO;
 import br.unitins.projeto.dto.metodo.pagamento.boleto.BoletoResponseDTO;
 import br.unitins.projeto.dto.metodo.pagamento.pix.PixResponseDTO;
-import br.unitins.projeto.dto.produto.ProdutoResponseDTO;
 import br.unitins.projeto.dto.usuario.UsuarioResponseDTO;
-import br.unitins.projeto.dto.usuario.cadastro.CadastroAdminResponseDTO;
-import br.unitins.projeto.model.Perfil;
 import br.unitins.projeto.model.StatusCompra;
 import br.unitins.projeto.service.compra.CompraService;
 import br.unitins.projeto.service.usuario.UsuarioService;
@@ -49,9 +46,8 @@ public class CompraResource {
     private static final Logger LOG = Logger.getLogger(CompraResource.class);
 
     private Long getIdUsuario() {
-        // String login = jwt.getSubject();
-        // UsuarioResponseDTO usuario = usuarioService.findByLogin(login);
-        UsuarioResponseDTO usuario = usuarioService.findById(1L);
+        String login = jwt.getSubject();
+        UsuarioResponseDTO usuario = usuarioService.findByLogin(login);
         return usuario.id();
     }
 
@@ -133,17 +129,25 @@ public class CompraResource {
 
     @GET
 //    @RolesAllowed({"Admin", "User"})
-    @Path("/{idCompra}/pagamento")
-    public Response getMetodoDePagamento(@PathParam("idCompra") Long id) {
+    @Path("/{idCompra}/pagamento/boleto")
+    public Response getMetodoDePagamentoBoleto(@PathParam("idCompra") Long id) {
         LOG.info("Consultando método de pagamento");
-        Response response = service.getMetodoPagamento(id);
-        LOG.infof("Busca de método de pagamento realizada com sucesso.");
-        return response;
+        BoletoResponseDTO response = service.getBoleto(id);
+        return Response.ok().entity(response).build();
+    }
+
+    @GET
+//    @RolesAllowed({"Admin", "User"})
+    @Path("/{idCompra}/pagamento/pix")
+    public Response getMetodoDePagamentoPix(@PathParam("idCompra") Long id) {
+        LOG.info("Consultando método de pagamento");
+        PixResponseDTO response = service.getPix(id);
+        return Response.ok().entity(response).build();
     }
 
     @GET
     @Path("/status-compra")
-    public Response getStatusCompra(){
+    public Response getStatusCompra() {
         return Response.ok(StatusCompra.values()).build();
     }
 

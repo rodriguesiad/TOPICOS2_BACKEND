@@ -1,7 +1,9 @@
 package br.unitins.projeto.dto.usuario.cadastro;
 
+import java.time.LocalDate;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.hibernate.validator.constraints.br.CPF;
 
 import br.unitins.projeto.dto.endereco.EnderecoDTO;
@@ -21,7 +23,8 @@ public record CadastroDTO(
 
                 @NotBlank(message = "O campo senha deve ser informado.") String senha,
 
-                @NotBlank(message = "O campo login deve ser informado.") String login,
+                @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+                LocalDate dataNascimento,
 
                 @Valid List<TelefoneDTO> telefones,
 
